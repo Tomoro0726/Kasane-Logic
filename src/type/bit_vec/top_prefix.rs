@@ -14,7 +14,6 @@ impl BitVec {
                     break;
                 }
 
-                //1つ前のやつとORを取る?
                 match result.last() {
                     Some(v) => {
                         let mut copy = v.clone();

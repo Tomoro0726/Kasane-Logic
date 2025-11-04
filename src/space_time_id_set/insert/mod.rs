@@ -48,17 +48,17 @@ impl SpaceTimeIdSet {
 
         while !(f_encoded.is_empty() || x_encoded.is_empty() || y_encoded.is_empty()) {
             //各次元の代表の最小のやつを求める
-            let f_under_min = f_encoded
+            let f_under_min = &f_encoded
                 .iter()
                 .enumerate()
                 .min_by_key(|(_, v)| v.0)
                 .unwrap();
-            let x_under_min = x_encoded
+            let x_under_min = &x_encoded
                 .iter()
                 .enumerate()
                 .min_by_key(|(_, v)| v.0)
                 .unwrap();
-            let y_under_min = y_encoded
+            let y_under_min = &y_encoded
                 .iter()
                 .enumerate()
                 .min_by_key(|(_, v)| v.0)
@@ -70,13 +70,37 @@ impl SpaceTimeIdSet {
             //代表次元を選定して、関数を実行する
             if min_under == f_under_min.1.0 {
                 //Fが代表次元
-                Self::tmp(&self.f, &[&self.x, &self.y], &min_under, &f_under_min.1.1);
+                Self::tmp(
+                    &self.f,
+                    &[&self.x, &self.y],
+                    &min_under,
+                    &f_under_min.1.1,
+                    &mut f_encoded,
+                    &f_under_min.0,
+                    &[&mut x_encoded, &mut y_encoded],
+                );
             } else if min_under == x_under_min.1.0 {
                 //Xが代表次元
-                Self::tmp(&self.x, &[&self.f, &self.y], &min_under, &x_under_min.1.1);
+                Self::tmp(
+                    &self.x,
+                    &[&self.f, &self.y],
+                    &min_under,
+                    &x_under_min.1.1,
+                    &mut x_encoded,
+                    &x_under_min.0,
+                    &[&mut f_encoded, &mut y_encoded],
+                );
             } else {
                 //Yが代表次元
-                Self::tmp(&self.y, &[&self.f, &self.x], &min_under, &y_under_min.1.1);
+                Self::tmp(
+                    &self.y,
+                    &[&self.f, &self.x],
+                    &min_under,
+                    &y_under_min.1.1,
+                    &mut y_encoded,
+                    &y_under_min.0,
+                    &[&mut f_encoded, &mut x_encoded],
+                );
             }
         }
 
