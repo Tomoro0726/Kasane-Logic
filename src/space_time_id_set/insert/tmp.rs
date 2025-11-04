@@ -8,10 +8,11 @@ use crate::{
 impl SpaceTimeIdSet {
     pub fn tmp(
         main_dim: &BTreeMap<BitVec, LayerInfo>,
-        other_dim: &[BTreeMap<BitVec, LayerInfo>; 2],
+        other_dim: &[&BTreeMap<BitVec, LayerInfo>; 2],
         min_under: &usize,
-        main_encoded: BitVec,
+        main_encoded: &BitVec,
     ) {
         //まず上位IDを検索
+        //上位には同位を含む
     }
 }

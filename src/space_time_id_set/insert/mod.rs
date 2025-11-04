@@ -17,45 +17,64 @@ pub mod search_under;
 pub mod tmp;
 
 impl SpaceTimeIdSet {
-    pub fn insert(&mut self, id: SpaceTimeId) {
+    pub fn insert(&self, id: SpaceTimeId) {
         //IDを各次元ごとに最適な単体範囲に分解する
         let f_splited = convert_f(id.z, id.f);
         let x_splited = convert_xy(id.z, id.x);
         let y_splited = convert_xy(id.z, id.y);
 
         //各次元の範囲をBitVecに変換する
-        let mut f_encoded: Vec<BitVec> = f_splited
+        let mut f_encoded: Vec<(usize, BitVec)> = f_splited
             .iter()
-            .map(|(z, f)| convert_bitmask_f(*z, *f))
+            .map(|(z, f)| {
+                let bit_vec = convert_bitmask_f(*z, *f);
+                (Self::search_under(&self.f, &bit_vec), bit_vec)
+            })
             .collect();
-        let mut x_encoded: Vec<BitVec> = x_splited
+        let mut x_encoded: Vec<(usize, BitVec)> = x_splited
             .iter()
-            .map(|(z, x)| convert_bitmask_xy(*z, *x))
+            .map(|(z, x)| {
+                let bit_vec = convert_bitmask_xy(*z, *x);
+                (Self::search_under(&self.x, &bit_vec), bit_vec)
+            })
             .collect();
-        let mut y_encoded: Vec<BitVec> = y_splited
+        let mut y_encoded: Vec<(usize, BitVec)> = y_splited
             .iter()
-            .map(|(z, y)| convert_bitmask_xy(*z, *y))
+            .map(|(z, y)| {
+                let bit_vec = convert_bitmask_xy(*z, *y);
+                (Self::search_under(&self.y, &bit_vec), bit_vec)
+            })
             .collect();
-
-        //各次元の範囲の下位のIDの個数を求める
-        let mut f_search_under: Vec<usize> = Self::search_under(&self.f, &f_encoded);
-        let mut x_search_under: Vec<usize> = Self::search_under(&self.x, &x_encoded);
-        let mut y_search_under: Vec<usize> = Self::search_under(&self.y, &y_encoded);
 
         while !(f_encoded.is_empty() || x_encoded.is_empty() || y_encoded.is_empty()) {
             //各次元の代表の最小のやつを求める
-            let min_under_f = f_search_under.iter().min_by_key(|v| **v).unwrap();
-            let min_under_x = x_search_under.iter().min_by_key(|v| **v).unwrap();
-            let min_under_y = y_search_under.iter().min_by_key(|v| **v).unwrap();
+            let f_under_min = f_encoded
+                .iter()
+                .enumerate()
+                .min_by_key(|(_, v)| v.0)
+                .unwrap();
+            let x_under_min = x_encoded
+                .iter()
+                .enumerate()
+                .min_by_key(|(_, v)| v.0)
+                .unwrap();
+            let y_under_min = y_encoded
+                .iter()
+                .enumerate()
+                .min_by_key(|(_, v)| v.0)
+                .unwrap();
 
-            let min_under = min_under_f.min(min_under_x.min(min_under_y));
+            let min_under = f_under_min.1.0.min(x_under_min.1.0.min(y_under_min.1.0));
 
-            if min_under_f == min_under {
+            if min_under == f_under_min.1.0 {
                 //Fが代表次元
-            } else if min_under_x == min_under {
+                Self::tmp(&self.f, &[&self.x, &self.y], &min_under, &f_under_min.1.1);
+            } else if min_under == x_under_min.1.0 {
                 //Xが代表次元
+                Self::tmp(&self.x, &[&self.f, &self.y], &min_under, &x_under_min.1.1);
             } else {
                 //Yが代表次元
+                Self::tmp(&self.y, &[&self.f, &self.x], &min_under, &y_under_min.1.1);
             }
         }
 
