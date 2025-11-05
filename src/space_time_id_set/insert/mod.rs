@@ -1,23 +1,22 @@
-use serde::de::value;
-
 use crate::{
     space_time_id::SpaceTimeId,
     space_time_id_set::{
-        Index, SpaceTimeIdSet,
+        SpaceTimeIdSet,
+        insert::tmp::MainDimensionSelect,
         single::{
-            convert_bitvec_f::convert_bitmask_f,
-            convert_bitvec_xy::convert_bitmask_xy,
-            convert_single_f::{self, convert_f},
-            convert_single_xy::convert_xy,
+            convert_bitvec_f::convert_bitmask_f, convert_bitvec_xy::convert_bitmask_xy,
+            convert_single_f::convert_f, convert_single_xy::convert_xy,
         },
     },
     r#type::bit_vec::BitVec,
 };
+pub mod generate_index;
 pub mod search_under;
 pub mod tmp;
+pub mod uncheck_insert;
 
 impl SpaceTimeIdSet {
-    pub fn insert(&self, id: SpaceTimeId) {
+    pub fn insert(&mut self, id: SpaceTimeId) {
         //IDを各次元ごとに最適な単体範囲に分解する
         let f_splited = convert_f(id.z, id.f);
         let x_splited = convert_xy(id.z, id.x);
@@ -48,58 +47,64 @@ impl SpaceTimeIdSet {
 
         while !(f_encoded.is_empty() || x_encoded.is_empty() || y_encoded.is_empty()) {
             //各次元の代表の最小のやつを求める
-            let f_under_min = &f_encoded
-                .iter()
-                .enumerate()
-                .min_by_key(|(_, v)| v.0)
-                .unwrap();
-            let x_under_min = &x_encoded
-                .iter()
-                .enumerate()
-                .min_by_key(|(_, v)| v.0)
-                .unwrap();
-            let y_under_min = &y_encoded
-                .iter()
-                .enumerate()
-                .min_by_key(|(_, v)| v.0)
-                .unwrap();
 
-            //全ての次元において最小のものを求める
-            let min_under = f_under_min.1.0.min(x_under_min.1.0.min(y_under_min.1.0));
+            let (f_index, f_under_min_val) = {
+                let (i, v) = f_encoded
+                    .iter()
+                    .enumerate()
+                    .min_by_key(|(_, v)| v.0)
+                    .unwrap();
+                (i, (v.0, v.1.clone())) // cloneしておく
+            };
 
-            //代表次元を選定して、関数を実行する
-            if min_under == f_under_min.1.0 {
-                //Fが代表次元
-                Self::tmp(
-                    &self.f,
-                    &[&self.x, &self.y],
+            let (x_index, x_under_min_val) = {
+                let (i, v) = x_encoded
+                    .iter()
+                    .enumerate()
+                    .min_by_key(|(_, v)| v.0)
+                    .unwrap();
+                (i, (v.0, v.1.clone()))
+            };
+
+            let (y_index, y_under_min_val) = {
+                let (i, v) = y_encoded
+                    .iter()
+                    .enumerate()
+                    .min_by_key(|(_, v)| v.0)
+                    .unwrap();
+                (i, (v.0, v.1.clone()))
+            };
+
+            let min_under = f_under_min_val
+                .0
+                .min(x_under_min_val.0.min(y_under_min_val.0));
+
+            if min_under == f_under_min_val.0 {
+                self.tmp(
                     &min_under,
-                    &f_under_min.1.1,
+                    &f_under_min_val.1,
                     &mut f_encoded,
-                    &f_under_min.0,
-                    &[&mut x_encoded, &mut y_encoded],
+                    &f_index,
+                    &[&x_encoded, &y_encoded],
+                    MainDimensionSelect::F,
                 );
-            } else if min_under == x_under_min.1.0 {
-                //Xが代表次元
-                Self::tmp(
-                    &self.x,
-                    &[&self.f, &self.y],
+            } else if min_under == x_under_min_val.0 {
+                self.tmp(
                     &min_under,
-                    &x_under_min.1.1,
+                    &x_under_min_val.1,
                     &mut x_encoded,
-                    &x_under_min.0,
-                    &[&mut f_encoded, &mut y_encoded],
+                    &x_index,
+                    &[&f_encoded, &y_encoded],
+                    MainDimensionSelect::F,
                 );
             } else {
-                //Yが代表次元
-                Self::tmp(
-                    &self.y,
-                    &[&self.f, &self.x],
+                self.tmp(
                     &min_under,
-                    &y_under_min.1.1,
+                    &y_under_min_val.1,
                     &mut y_encoded,
-                    &y_under_min.0,
-                    &[&mut f_encoded, &mut x_encoded],
+                    &y_index,
+                    &[&x_encoded, &f_encoded],
+                    MainDimensionSelect::F,
                 );
             }
         }
