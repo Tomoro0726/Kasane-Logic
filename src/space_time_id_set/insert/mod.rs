@@ -1,8 +1,10 @@
+use core::prelude;
+
 use crate::{
     space_time_id::SpaceTimeId,
     space_time_id_set::{
         SpaceTimeIdSet,
-        insert::tmp::MainDimensionSelect,
+        insert::insert_main_dim::MainDimensionSelect,
         single::{
             convert_bitvec_f::convert_bitmask_f, convert_bitvec_xy::convert_bitmask_xy,
             convert_single_f::convert_f, convert_single_xy::convert_xy,
@@ -10,10 +12,15 @@ use crate::{
     },
     r#type::bit_vec::BitVec,
 };
+pub mod collect_top;
+pub mod collect_under;
 pub mod generate_index;
-pub mod search_under;
-pub mod tmp;
+pub mod insert_main_dim;
+pub mod relation;
+pub mod search_under_count;
+pub mod select_dimensions;
 pub mod uncheck_insert;
+pub mod uncheck_insert_combinations;
 
 impl SpaceTimeIdSet {
     pub fn insert(&mut self, id: SpaceTimeId) {
@@ -22,29 +29,31 @@ impl SpaceTimeIdSet {
         let x_splited = convert_xy(id.z, id.x);
         let y_splited = convert_xy(id.z, id.y);
 
-        //各次元の範囲をBitVecに変換する
+        //各次元の範囲をBitVecに変換する(usize=下位範囲の個数、BitVec=エンコード結果)
         let mut f_encoded: Vec<(usize, BitVec)> = f_splited
             .iter()
             .map(|(z, f)| {
                 let bit_vec = convert_bitmask_f(*z, *f);
-                (Self::search_under(&self.f, &bit_vec), bit_vec)
+                (Self::search_under_count(&self.f, &bit_vec), bit_vec)
             })
             .collect();
         let mut x_encoded: Vec<(usize, BitVec)> = x_splited
             .iter()
             .map(|(z, x)| {
                 let bit_vec = convert_bitmask_xy(*z, *x);
-                (Self::search_under(&self.x, &bit_vec), bit_vec)
+                (Self::search_under_count(&self.x, &bit_vec), bit_vec)
             })
             .collect();
         let mut y_encoded: Vec<(usize, BitVec)> = y_splited
             .iter()
             .map(|(z, y)| {
                 let bit_vec = convert_bitmask_xy(*z, *y);
-                (Self::search_under(&self.y, &bit_vec), bit_vec)
+                (Self::search_under_count(&self.y, &bit_vec), bit_vec)
             })
             .collect();
 
+        //最も探索範囲が小さくなりそうな次元を代表次元として挿入を繰り返す
+        //どこかの次元がなくなるまで繰り返す
         while !(f_encoded.is_empty() || x_encoded.is_empty() || y_encoded.is_empty()) {
             //各次元の代表の最小のやつを求める
 
@@ -80,7 +89,7 @@ impl SpaceTimeIdSet {
                 .min(x_under_min_val.0.min(y_under_min_val.0));
 
             if min_under == f_under_min_val.0 {
-                self.tmp(
+                self.insert_main_dim(
                     &min_under,
                     &f_under_min_val.1,
                     &mut f_encoded,
@@ -89,7 +98,7 @@ impl SpaceTimeIdSet {
                     MainDimensionSelect::F,
                 );
             } else if min_under == x_under_min_val.0 {
-                self.tmp(
+                self.insert_main_dim(
                     &min_under,
                     &x_under_min_val.1,
                     &mut x_encoded,
@@ -98,12 +107,12 @@ impl SpaceTimeIdSet {
                     MainDimensionSelect::F,
                 );
             } else {
-                self.tmp(
+                self.insert_main_dim(
                     &min_under,
                     &y_under_min_val.1,
                     &mut y_encoded,
                     &y_index,
-                    &[&x_encoded, &f_encoded],
+                    &[&f_encoded, &x_encoded],
                     MainDimensionSelect::F,
                 );
             }
