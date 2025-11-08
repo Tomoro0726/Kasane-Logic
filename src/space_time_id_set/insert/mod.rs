@@ -1,4 +1,4 @@
-use core::prelude;
+use std::os::windows::prelude;
 
 use crate::{
     space_time_id::SpaceTimeId,
@@ -17,6 +17,7 @@ pub mod collect_top;
 pub mod collect_under;
 pub mod generate_index;
 pub mod insert_main_dim;
+pub mod scan_and_insert_top;
 pub mod search_under_count;
 pub mod select_dimensions;
 pub mod uncheck_insert;
@@ -90,53 +91,32 @@ impl SpaceTimeIdSet {
 
             if min_under == f_under_min_val.0 {
                 self.insert_main_dim(
-                    &min_under,
                     &f_under_min_val.1,
-                    &mut f_encoded,
                     &f_index,
+                    &min_under,
+                    &mut f_encoded,
                     &[&x_encoded, &y_encoded],
                     MainDimensionSelect::F,
                 );
             } else if min_under == x_under_min_val.0 {
                 self.insert_main_dim(
-                    &min_under,
                     &x_under_min_val.1,
-                    &mut x_encoded,
                     &x_index,
+                    &min_under,
+                    &mut x_encoded,
                     &[&f_encoded, &y_encoded],
                     MainDimensionSelect::F,
                 );
             } else {
                 self.insert_main_dim(
-                    &min_under,
                     &y_under_min_val.1,
-                    &mut y_encoded,
                     &y_index,
+                    &min_under,
+                    &mut y_encoded,
                     &[&f_encoded, &x_encoded],
                     MainDimensionSelect::F,
                 );
             }
         }
-
-        //基準にする軸を決めるために、全ての軸で探索を行う
-
-        //分離範囲ごとに下位IDの個数を調べる
-
-        //下位IDの個数が少ない順にSortする
-
-        //挿入していく
-
-        //上位IDを調べる
-
-        //上位IDがある場合は逆引きして他の次元と重なりがないかを検証する
-
-        //この段階で代表次元について上位IDと下位IDが出そろう
-        //順番に逆引きしていく
-        //上位IDの場合は挿入しない
-        //下位IDの場合は下位IDを削除
-        //部分の場合は総合して下位を切る
-        //隣に連続なIDがあればくっつける
-
-        //これを繰り返す
     }
 }
