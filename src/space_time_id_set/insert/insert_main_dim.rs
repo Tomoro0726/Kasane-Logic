@@ -69,16 +69,12 @@ impl SpaceTimeIdSet {
         //代表次元における下位範囲を収拾する
         let main_under = self.collect_under(main_bit, &main_dim_select);
 
-        //逆引きをして範囲を照合
-
-        //------------------------------------------
-
-        //main_underを検索
-
-        //全てが下位の場合→そのIDをdelete
-
-        //main_underのみが下位で、残りの2つが上位の場合（多数決で勝ち→相手を削る）
-
-        //main_topと1つが下位で、残りの1つが上位の場合（多数決で負け→自分を削る）
+        self.scan_and_insert_under(
+            main_bit,
+            &main_under,
+            other_encoded,
+            main_dim_select,
+            main_under_count,
+        );
     }
 }

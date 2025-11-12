@@ -7,7 +7,7 @@ impl fmt::Display for SpaceTimeId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{}/{}:{}/{}:{}/{}:{}_{}/{}:{}",
+            "{}/{}:{}/{}:{}/{}:{}",
             self.z,
             self.f[0],
             self.f[1],
@@ -15,9 +15,9 @@ impl fmt::Display for SpaceTimeId {
             self.x[1],
             self.y[0],
             self.y[1],
-            self.i,
-            self.t[0],
-            self.t[1],
+            // self.i,
+            // self.t[0],
+            // self.t[1],
         )
     }
 }

@@ -6,8 +6,10 @@ use std::{
 pub mod single;
 
 type Index = usize;
+pub mod get_all;
 pub mod insert;
 
+#[derive(Debug)]
 pub struct LayerInfo {
     //その階層が持つ実際のIDのIndex
     pub index: HashSet<Index>,
@@ -16,12 +18,14 @@ pub struct LayerInfo {
     pub count: usize,
 }
 
+#[derive(Debug)]
 pub struct ReverseInfo {
     f: BitVec,
     x: BitVec,
     y: BitVec,
 }
 
+#[derive(Debug)]
 pub struct SpaceTimeIdSet {
     //各次元の範囲を保存するためのBTreeMap
     f: BTreeMap<BitVec, LayerInfo>,

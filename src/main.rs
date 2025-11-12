@@ -1,25 +1,36 @@
-use std::collections::HashSet;
-
-use kasane_logic::{
-    space_time_id::SpaceTimeId,
-    space_time_id_set::{
-        SpaceTimeIdSet,
-        single::{
-            convert_bitvec_f::convert_bitmask_f, convert_bitvec_xy::convert_bitmask_xy,
-            convert_single_f::convert_f, convert_single_xy::convert_xy,
-            invert_bitvec_f::invert_bitmask_f, invert_bitvec_xy::invert_bitmask_xy,
-        },
-    },
-    r#type::bit_vec::BitVec,
-};
+use kasane_logic::{space_time_id::SpaceTimeId, space_time_id_set::SpaceTimeIdSet};
 
 fn main() {
-    let top = BitVec::from_vec(vec![0b10000000]);
-    let mut under = BitVec::from_vec(vec![0b10101110]);
+    let mut set = SpaceTimeIdSet::new();
+    let id = SpaceTimeId::new(
+        4,
+        [Some(3), Some(2)],
+        [Some(3), Some(5)],
+        [Some(3), Some(5)],
+        0,
+        [None, None],
+    )
+    .unwrap();
 
-    let result = SpaceTimeIdSet::split_dimension(&top, &mut under);
+    let id2 = SpaceTimeId::new(
+        5,
+        [Some(3), Some(2)],
+        [Some(3), Some(5)],
+        [Some(3), Some(5)],
+        0,
+        [None, None],
+    )
+    .unwrap();
 
-    for ele in result {
-        println!("{}", ele);
+    set.insert(id);
+    set.insert(id2);
+
+    println!("{}", id);
+    println!("{}", id2);
+
+    println!("-------------");
+
+    for ele in set.get_all() {
+        println!("{},", ele);
     }
 }

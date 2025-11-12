@@ -104,10 +104,8 @@ impl SpaceTimeIdSet {
                         }
                     }
 
-                    //ここまだ終わってない
-
                     // mainに突き抜けていたIDを分割
-                    for bit_main in Self::split_dimension(&target_main, &mut main_bit.clone()) {
+                    for bit_main in Self::split_dimension(&main_bit, &mut target_main) {
                         let f = &bit_main;
                         let x = &target_a;
                         let y = &target_b;
