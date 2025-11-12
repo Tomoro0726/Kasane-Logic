@@ -32,6 +32,10 @@ impl SpaceTimeIdSet {
 
         let main_top = Self::collect_top(&self, main_bit, &main_dim_select);
 
+        println!("{:?}", main_dim_select);
+
+        println!("{:?}", main_top);
+
         //代表次元において、上位も下位も存在しなかった場合
         if main_top.is_empty() && *main_under_count == 0 {
             //代表次元をBitVecから削除

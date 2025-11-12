@@ -5,18 +5,18 @@ fn main() {
 
     let id1 = SpaceTimeId::new(
         4,
-        [Some(5), Some(15)],
-        [Some(3), Some(14)],
-        [Some(3), Some(12)],
+        [Some(3), Some(4)],
+        [Some(3), Some(4)],
+        [Some(3), Some(4)],
         0,
         [None, None],
     )
     .unwrap();
     let id2 = SpaceTimeId::new(
-        2,
-        [Some(3), Some(3)],
-        [Some(1), Some(3)],
-        [Some(1), Some(3)],
+        5,
+        [Some(7), Some(7)],
+        [Some(8), Some(4)],
+        [Some(6), Some(6)],
         0,
         [None, None],
     )

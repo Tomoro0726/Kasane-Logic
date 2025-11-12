@@ -5,6 +5,8 @@ impl SpaceTimeIdSet {
         let mut result: Vec<BitVec> = vec![];
 
         while top != under {
+            println!("a{}", under);
+
             under.reverse_bottom_layer();
 
             result.push(under.clone());
