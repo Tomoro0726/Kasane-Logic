@@ -1,78 +1,25 @@
 pub fn convert_f(z: u8, dimension: [i64; 2]) -> Vec<(u8, i64)> {
-    if dimension[0] >= 0 && dimension[1] >= 0 {
-        return convert_f_plus(z, dimension);
-    } else if dimension[0] < 0 && dimension[1] < 0 {
-        return convert_f_minus(z, dimension);
-    } else {
-        let mut result = vec![];
-
-        result.extend(convert_f_plus(z, [0, dimension[1]]));
-
-        result.extend(convert_f_minus(z, [dimension[0], -1]));
-
-        return result;
-    };
-}
-
-fn convert_f_minus(z: u8, dimension: [i64; 2]) -> Vec<(u8, i64)> {
-    let mut current_range = Some(dimension);
+    let diff = 2_i64.pow(z.into());
+    let mut target = [dimension[0] + diff, dimension[1] + diff];
     let mut now_z = z;
     let mut result = Vec::new();
 
-    while let Some(mut target) = current_range {
+    loop {
         if target[0] == target[1] {
             // 終端 → これ以上分割しない
-            result.push((now_z, target[0]));
+            result.push((now_z, target[0] - 2_i64.pow(now_z.into())));
             break;
         }
 
         // 左端が奇数なら個別に処理
         if target[0] % 2 != 0 {
-            result.push((now_z, target[0]));
-            target[0] += 1;
-        }
-        if target[1] % 2 == 0 {
-            result.push((now_z, target[1]));
-            target[1] -= 1;
-        }
-
-        // 範囲が逆転したら終了
-        if target[0] > target[1] {
-            break;
-        }
-
-        // 次のズームレベルへ（範囲を半分に縮小）
-        current_range = Some([target[0] / 2, target[1] / 2]);
-        if now_z == 0 {
-            break; // z=0で終了
-        }
-        now_z -= 1;
-    }
-
-    result
-}
-
-fn convert_f_plus(z: u8, dimension: [i64; 2]) -> Vec<(u8, i64)> {
-    let mut current_range = Some(dimension);
-    let mut now_z = z;
-    let mut result = Vec::new();
-
-    while let Some(mut target) = current_range {
-        if target[0] == target[1] {
-            // 終端 → これ以上分割しない
-            result.push((now_z, target[0]));
-            break;
-        }
-
-        // 左端が奇数なら個別に処理
-        if target[0] % 2 != 0 {
-            result.push((now_z, target[0]));
+            result.push((now_z, target[0] - 2_i64.pow(now_z.into())));
             target[0] += 1;
         }
 
         // 右端が偶数なら個別に処理
         if target[1] % 2 == 0 {
-            result.push((now_z, target[1]));
+            result.push((now_z, target[1] - 2_i64.pow(now_z.into())));
             target[1] -= 1;
         }
 
@@ -82,10 +29,11 @@ fn convert_f_plus(z: u8, dimension: [i64; 2]) -> Vec<(u8, i64)> {
         }
 
         // 次のズームレベルへ（範囲を半分に縮小）
-        current_range = Some([target[0] / 2, target[1] / 2]);
         if now_z == 0 {
             break; // z=0で終了
         }
+
+        target = [target[0] / 2, target[1] / 2];
         now_z -= 1;
     }
 

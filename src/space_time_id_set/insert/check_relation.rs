@@ -1,9 +1,4 @@
-use std::collections::HashSet;
-
-use crate::{
-    space_time_id_set::{Index, SpaceTimeIdSet, insert::insert_main_dim::MainDimensionSelect},
-    r#type::bit_vec::BitVec,
-};
+use crate::{space_time_id_set::SpaceTimeIdSet, r#type::bit_vec::BitVec};
 
 ///Me（自身）から見た視点の結果
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]

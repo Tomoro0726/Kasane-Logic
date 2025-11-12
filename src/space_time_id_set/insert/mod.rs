@@ -1,5 +1,3 @@
-use std::f32::consts::E;
-
 use crate::{
     space_time_id::SpaceTimeId,
     space_time_id_set::{

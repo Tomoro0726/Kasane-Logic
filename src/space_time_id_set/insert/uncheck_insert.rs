@@ -12,9 +12,9 @@ impl SpaceTimeIdSet {
         let index = self.generate_index();
 
         // 各次元に共通処理を適用
-        Self::update_layer(&mut self.f, f, index);
-        Self::update_layer(&mut self.x, x, index);
-        Self::update_layer(&mut self.y, y, index);
+        Self::update_layer(&mut self.f, f);
+        Self::update_layer(&mut self.x, x);
+        Self::update_layer(&mut self.y, y);
 
         //逆引きに挿入
         self.reverse.insert(
@@ -28,7 +28,7 @@ impl SpaceTimeIdSet {
     }
 
     ///上位の階層のcountに+1
-    fn update_layer(map: &mut BTreeMap<BitVec, LayerInfo>, key: &BitVec, index: usize) {
+    fn update_layer(map: &mut BTreeMap<BitVec, LayerInfo>, key: &BitVec) {
         for key_top in key.top_prefix() {
             map.entry(key_top)
                 .and_modify(|v| v.count += 1)

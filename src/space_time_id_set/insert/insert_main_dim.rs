@@ -1,4 +1,3 @@
-use crate::space_time_id_set::insert::check_relation::Relation;
 use crate::{space_time_id_set::SpaceTimeIdSet, r#type::bit_vec::BitVec};
 
 #[derive(Clone, Copy, Debug)]
@@ -16,12 +15,6 @@ impl MainDimensionSelect {
             MainDimensionSelect::Y => 2,
         }
     }
-}
-
-pub struct DimRelation {
-    f: Relation,
-    x: Relation,
-    y: Relation,
 }
 
 impl SpaceTimeIdSet {
@@ -69,13 +62,7 @@ impl SpaceTimeIdSet {
         //代表次元における下位範囲を収拾する
         let main_under = self.collect_under(main_bit, &main_dim_select);
 
-        self.scan_and_insert_under(
-            main_bit,
-            &main_under,
-            other_encoded,
-            main_dim_select,
-            main_under_count,
-        );
+        self.scan_and_insert_under(main_bit, &main_under, other_encoded, main_dim_select);
         main_encoded.remove(*main_index);
 
         return;

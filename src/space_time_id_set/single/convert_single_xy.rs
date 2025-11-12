@@ -1,9 +1,9 @@
 pub fn convert_xy(z: u8, dimension: [u64; 2]) -> Vec<(u8, u64)> {
-    let mut current_range = Some(dimension);
+    let mut target = dimension;
     let mut now_z = z;
     let mut result = Vec::new();
 
-    while let Some(mut target) = current_range {
+    loop {
         if target[0] == target[1] {
             // 終端 → これ以上分割しない
             result.push((now_z, target[0]));
@@ -28,10 +28,11 @@ pub fn convert_xy(z: u8, dimension: [u64; 2]) -> Vec<(u8, u64)> {
         }
 
         // 次のズームレベルへ（範囲を半分に縮小）
-        current_range = Some([target[0] / 2, target[1] / 2]);
         if now_z == 0 {
             break; // z=0で終了
         }
+
+        target = [target[0] / 2, target[1] / 2];
         now_z -= 1;
     }
 

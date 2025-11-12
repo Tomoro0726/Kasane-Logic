@@ -1,4 +1,3 @@
-use core::fmt;
 use serde::Serialize;
 pub mod format;
 pub mod random;

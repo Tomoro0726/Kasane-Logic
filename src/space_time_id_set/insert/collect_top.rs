@@ -1,9 +1,7 @@
-use std::collections::{BTreeMap, HashSet};
+use std::collections::HashSet;
 
 use crate::{
-    space_time_id_set::{
-        Index, LayerInfo, SpaceTimeIdSet, insert::insert_main_dim::MainDimensionSelect,
-    },
+    space_time_id_set::{Index, SpaceTimeIdSet, insert::insert_main_dim::MainDimensionSelect},
     r#type::bit_vec::BitVec,
 };
 

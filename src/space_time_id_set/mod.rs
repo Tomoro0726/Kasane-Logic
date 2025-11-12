@@ -1,8 +1,5 @@
-use crate::{space_time_id::SpaceTimeId, r#type::bit_vec::BitVec};
-use std::{
-    collections::{BTreeMap, HashMap, HashSet},
-    hash::Hash,
-};
+use crate::r#type::bit_vec::BitVec;
+use std::collections::{BTreeMap, HashMap, HashSet};
 pub mod single;
 
 type Index = usize;

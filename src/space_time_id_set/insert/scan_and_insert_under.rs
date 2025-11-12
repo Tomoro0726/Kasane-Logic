@@ -3,10 +3,7 @@ use std::collections::HashSet;
 use crate::{
     space_time_id_set::{
         Index, SpaceTimeIdSet,
-        insert::{
-            check_relation::{self, Relation},
-            insert_main_dim::MainDimensionSelect,
-        },
+        insert::{check_relation::Relation, insert_main_dim::MainDimensionSelect},
     },
     r#type::bit_vec::BitVec,
 };
@@ -18,7 +15,6 @@ impl SpaceTimeIdSet {
         main_under: &HashSet<Index>,
         other_encoded: &[&Vec<(usize, BitVec)>; 2],
         main_dim_select: MainDimensionSelect,
-        main_under_count: &usize,
     ) {
         // コピーは破壊的操作用
         let mut other_encoded_copy: [Vec<Option<(usize, BitVec)>>; 2] =
@@ -46,7 +42,7 @@ impl SpaceTimeIdSet {
 
             // ---- A軸を処理 ----
             for (i, (_, bit_a)) in other_encoded[0].iter().enumerate() {
-                if let Some(a_v) = other_encoded_copy[0][i].as_mut() {
+                if let Some(_a_v) = other_encoded_copy[0][i].as_mut() {
                     let relation = Self::check_relation(bit_a, target_a);
 
                     if relation == Relation::Disjoint {
@@ -65,7 +61,7 @@ impl SpaceTimeIdSet {
 
             // ---- B軸を処理 ----
             for (i, (_, bit_b)) in other_encoded[1].iter().enumerate() {
-                if let Some(b_v) = other_encoded_copy[1][i].as_mut() {
+                if let Some(_b_v) = other_encoded_copy[1][i].as_mut() {
                     let relation = Self::check_relation(bit_b, target_b);
 
                     if relation == Relation::Disjoint {
