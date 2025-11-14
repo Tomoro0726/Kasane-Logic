@@ -110,7 +110,7 @@ impl SpaceTimeIdSet {
             ));
         }
 
-        for (a, b) in iproduct!(a_relations, b_relations) {
+        'outer: for (a, b) in iproduct!(a_relations, b_relations) {
             let a_relations = match a {
                 Some(v) => v,
                 None => {
@@ -127,7 +127,82 @@ impl SpaceTimeIdSet {
                 }
             };
 
-            //まずTopについて考える
+            let a_top = &a_relations.0;
+            let b_top = &b_relations.0;
+
+            for (k, index) in main_top.iter().enumerate() {
+                let a_relation = a_top[k];
+                let b_relation = b_top[k];
+
+                match (a_relation, b_relation) {
+                    // どちらかが Disjoint
+                    (a, b) if a == Relation::Disjoint || b == Relation::Disjoint => {}
+
+                    //全てがTop
+                    (a, b) if a == Relation::Top && b == Relation::Top => continue 'outer,
+
+                    //TTB
+                    (a, b) if a == Relation::Top || b == Relation::Top => {
+                        //相手を分割する
+
+                        //削除
+                        self.uncheck_delete(index);
+                        //再挿入
+                        continue;
+                    }
+                    (a, b) if a == Relation::Under && b == Relation::Under => {
+                        //自分から引かれる部分と軸を記録する
+                        continue;
+                    }
+                    _ => {
+                        panic!("デバッグ用");
+                    }
+                }
+            }
+
+            let a_under = &a_relations.1;
+            let b_under = &b_relations.1;
+
+            for (k, index) in main_under.iter().enumerate() {
+                let a_relation = a_under[k];
+                let b_relation = b_under[k];
+
+                match (a_relation, b_relation) {
+                    // どちらかが Disjoint
+                    (a, b) if a == Relation::Disjoint || b == Relation::Disjoint => {
+                        //無視して良い
+                        continue;
+                    }
+
+                    //全てが下位
+                    (a, b) if a == Relation::Under || b == Relation::Under => {
+                        //相手を削除する
+                        continue;
+                    }
+
+                    //TTB
+                    (a, b) if a == Relation::Top && b == Relation::Top => {
+                        //相手を分割する
+
+                        //削除
+
+                        //再挿入
+                        continue;
+                    }
+                    //TBB
+                    (a, b) if a == Relation::Under && b == Relation::Under => {
+                        //自分から引かれる部分と軸を記録する
+                        continue;
+                    }
+                    _ => {
+                        panic!("デバッグ用");
+                    }
+                }
+            }
+
+            //引くべき範囲を自身から引く
+
+            //挿入
         }
     }
 
