@@ -110,7 +110,10 @@ impl SpaceTimeIdSet {
             ));
         }
 
-        'outer: for (a, b) in iproduct!(a_relations, b_relations) {
+        'outer: for ((a_index, a), (b_index, b)) in iproduct!(
+            a_relations.iter().enumerate(),
+            b_relations.iter().enumerate()
+        ) {
             let a_relations = match a {
                 Some(v) => v,
                 None => {
@@ -127,8 +130,21 @@ impl SpaceTimeIdSet {
                 }
             };
 
+            ///Meから引く部分を記録する
+            struct Division {
+                main: Vec<BitVec>,
+                a: Vec<BitVec>,
+                b: Vec<BitVec>,
+            }
+
             let a_top = &a_relations.0;
             let b_top = &b_relations.0;
+
+            let mut divison = Division {
+                main: vec![],
+                a: vec![],
+                b: vec![],
+            };
 
             for (k, index) in main_top.iter().enumerate() {
                 let a_relation = a_top[k];
@@ -143,15 +159,67 @@ impl SpaceTimeIdSet {
 
                     //TTB
                     (a, b) if a == Relation::Top || b == Relation::Top => {
+                        let (target_f, target_x, target_y, target_main) = {
+                            let target = self.reverse.get(index).unwrap();
+
+                            let f = target.f.clone();
+                            let x = target.x.clone();
+                            let y = target.y.clone();
+
+                            let main = match &main_dim_select {
+                                MainDimensionSelect::F => f.clone(),
+                                MainDimensionSelect::X => x.clone(),
+                                MainDimensionSelect::Y => y.clone(),
+                            };
+
+                            (f, x, y, main)
+                        };
+
                         //相手を分割する
+                        let splited = Self::split_dimension(
+                            &target_main,
+                            &mut other_encoded[0][a_index].1.clone(),
+                        );
+
+                        //再挿入
+                        for ele in splited {
+                            match &main_dim_select {
+                                MainDimensionSelect::F => {
+                                    self.uncheck_insert(&ele, &target_x, &target_y);
+                                }
+                                MainDimensionSelect::X => {
+                                    self.uncheck_insert(&target_f, &ele, &target_y);
+                                }
+                                MainDimensionSelect::Y => {
+                                    self.uncheck_insert(&target_f, &target_x, &ele);
+                                }
+                            };
+                        }
 
                         //削除
                         self.uncheck_delete(index);
-                        //再挿入
+
                         continue;
                     }
+                    //TBB
                     (a, b) if a == Relation::Under && b == Relation::Under => {
+                        let target_main = {
+                            let target = self.reverse.get(index).unwrap();
+
+                            let f = target.f.clone();
+                            let x = target.x.clone();
+                            let y = target.y.clone();
+
+                            let main = match &main_dim_select {
+                                MainDimensionSelect::F => f.clone(),
+                                MainDimensionSelect::X => x.clone(),
+                                MainDimensionSelect::Y => y.clone(),
+                            };
+
+                            main
+                        };
                         //自分から引かれる部分と軸を記録する
+                        divison.main.push(target_main);
                         continue;
                     }
                     _ => {
@@ -169,29 +237,120 @@ impl SpaceTimeIdSet {
 
                 match (a_relation, b_relation) {
                     // どちらかが Disjoint
-                    (a, b) if a == Relation::Disjoint || b == Relation::Disjoint => {
-                        //無視して良い
-                        continue;
-                    }
+                    (a, b) if a == Relation::Disjoint || b == Relation::Disjoint => {}
 
                     //全てが下位
                     (a, b) if a == Relation::Under || b == Relation::Under => {
-                        //相手を削除する
+                        self.uncheck_delete(index);
                         continue;
                     }
 
                     //TTB
                     (a, b) if a == Relation::Top && b == Relation::Top => {
-                        //相手を分割する
+                        let target_main = {
+                            let target = self.reverse.get(index).unwrap();
 
-                        //削除
+                            let f = target.f.clone();
+                            let x = target.x.clone();
+                            let y = target.y.clone();
 
-                        //再挿入
+                            let main = match &main_dim_select {
+                                MainDimensionSelect::F => f.clone(),
+                                MainDimensionSelect::X => x.clone(),
+                                MainDimensionSelect::Y => y.clone(),
+                            };
+
+                            main
+                        };
+                        //自分から引かれる部分と軸を記録する
+                        divison.main.push(target_main);
                         continue;
                     }
                     //TBB
-                    (a, b) if a == Relation::Under && b == Relation::Under => {
-                        //自分から引かれる部分と軸を記録する
+                    (a, b) if a == Relation::Under => {
+                        let (target_f, target_x, target_y, target_main) = {
+                            let target = self.reverse.get(index).unwrap();
+
+                            let f = target.f.clone();
+                            let x = target.x.clone();
+                            let y = target.y.clone();
+
+                            let main = match &main_dim_select {
+                                MainDimensionSelect::F => f.clone(),
+                                MainDimensionSelect::X => x.clone(),
+                                MainDimensionSelect::Y => y.clone(),
+                            };
+
+                            (f, x, y, main)
+                        };
+
+                        //相手を分割する
+                        let splited = Self::split_dimension(
+                            &target_main,
+                            &mut other_encoded[0][a_index].1.clone(),
+                        );
+
+                        //再挿入
+                        for ele in splited {
+                            match &main_dim_select {
+                                MainDimensionSelect::F => {
+                                    self.uncheck_insert(&ele, &target_x, &target_y);
+                                }
+                                MainDimensionSelect::X => {
+                                    self.uncheck_insert(&target_f, &ele, &target_y);
+                                }
+                                MainDimensionSelect::Y => {
+                                    self.uncheck_insert(&target_f, &target_x, &ele);
+                                }
+                            };
+                        }
+
+                        //削除
+                        self.uncheck_delete(index);
+
+                        continue;
+                    }
+                    (a, b) if b == Relation::Under => {
+                        let (target_f, target_x, target_y, target_main) = {
+                            let target = self.reverse.get(index).unwrap();
+
+                            let f = target.f.clone();
+                            let x = target.x.clone();
+                            let y = target.y.clone();
+
+                            let main = match &main_dim_select {
+                                MainDimensionSelect::F => f.clone(),
+                                MainDimensionSelect::X => x.clone(),
+                                MainDimensionSelect::Y => y.clone(),
+                            };
+
+                            (f, x, y, main)
+                        };
+
+                        //相手を分割する
+                        let splited = Self::split_dimension(
+                            &target_main,
+                            &mut other_encoded[1][a_index].1.clone(),
+                        );
+
+                        //再挿入
+                        for ele in splited {
+                            match &main_dim_select {
+                                MainDimensionSelect::F => {
+                                    self.uncheck_insert(&ele, &target_x, &target_y);
+                                }
+                                MainDimensionSelect::X => {
+                                    self.uncheck_insert(&target_f, &ele, &target_y);
+                                }
+                                MainDimensionSelect::Y => {
+                                    self.uncheck_insert(&target_f, &target_x, &ele);
+                                }
+                            };
+                        }
+
+                        //削除
+                        self.uncheck_delete(index);
+
                         continue;
                     }
                     _ => {
@@ -199,10 +358,12 @@ impl SpaceTimeIdSet {
                     }
                 }
             }
+            //自分から引くべきもの
+            let main_splited = divison.main;
+            let a_splited = divison.a;
+            let b_splited = divison.b;
 
-            //引くべき範囲を自身から引く
-
-            //挿入
+            //otherの軸を分割する
         }
     }
 

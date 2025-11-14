@@ -13,6 +13,7 @@ use crate::{
 pub mod check_relation;
 pub mod collect_top;
 pub mod collect_under;
+pub mod divison;
 pub mod generate_index;
 pub mod insert_main_dim;
 pub mod scan_and_insert_top;
