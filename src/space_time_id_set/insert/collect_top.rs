@@ -22,7 +22,7 @@ impl SpaceTimeIdSet {
             }
         }
 
-        //順序を確定させて返す
+        //順序を確定させて返す\
         Vec::from_iter(result)
     }
 }

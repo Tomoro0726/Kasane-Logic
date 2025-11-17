@@ -11,19 +11,15 @@ use crate::{
     },
 };
 pub mod check_relation;
+pub mod collect_other_dimension;
 pub mod collect_top;
 pub mod collect_under;
-pub mod divison;
 pub mod generate_index;
 pub mod insert_main_dim;
-pub mod scan_and_insert_top;
-pub mod scan_and_insert_under;
 pub mod search_under_count;
 pub mod select_dimensions;
-pub mod split_dimension;
 pub mod uncheck_delete;
 pub mod uncheck_insert;
-pub mod uncheck_insert_combinations;
 
 impl SpaceTimeIdSet {
     pub fn insert(&mut self, id: SpaceTimeId) {
