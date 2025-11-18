@@ -28,7 +28,14 @@ impl SpaceTimeIdSet {
             DimensionSelect::Y => reverse.y.clone(),
         };
 
+        println!("DIM{:?}", target_dim);
+
+        println!("TOP{}", top);
+        println!("TAR{}", target_bit);
+
         let splited = BitVec::division(top, vec![target_bit]);
+
+        println!("splited:{:?}", splited);
 
         // ここでreverseのフィールドを個別にclone
         let reverse_f = reverse.f.clone();

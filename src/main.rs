@@ -21,20 +21,20 @@ fn main() {
     let mut set = SpaceTimeIdSet::new();
 
     let id1 = SpaceTimeId::new(
-        3,
-        [Some(3), Some(6)],
-        [Some(0), Some(6)],
-        [Some(1), Some(6)],
+        5,
+        [Some(31), Some(31)],
+        [Some(14), Some(25)],
+        [Some(0), Some(13)],
         0,
         [None, None],
     )
     .unwrap();
 
     let id2 = SpaceTimeId::new(
-        1,
-        [Some(0), Some(0)],
-        [Some(1), Some(0)],
-        [Some(1), Some(1)],
+        3,
+        [Some(7), Some(7)],
+        [Some(4), Some(6)],
+        [Some(1), Some(7)],
         0,
         [None, None],
     )
@@ -44,6 +44,9 @@ fn main() {
     println!("-----------");
 
     set.insert(id1);
+
+    println!("-----------");
+
     set.insert(id2);
 
     for ele in set.get_all() {

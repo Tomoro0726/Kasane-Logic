@@ -14,7 +14,7 @@ impl SpaceTimeId {
         let rand_z = rng.random_range(0..=z);
 
         let f_max = F_MAX[rand_z as usize];
-        let f_min = 0;
+        let f_min = F_MAX[rand_z as usize];
         let xy_max: u64 = XY_MAX[rand_z as usize];
         let xy_min: u64 = 0;
 
