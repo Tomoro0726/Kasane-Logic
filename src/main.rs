@@ -33,9 +33,7 @@ fn main() {
     println!("{}", id1);
     println!(",{}", id2);
     println!("-----------");
-
     set.insert(id1);
-
     println!("-----------");
 
     set.insert(id2);

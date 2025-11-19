@@ -13,7 +13,6 @@ pub struct NeedDivison {
 
 impl SpaceTimeIdSet {
     ///自分を切断する
-    /// あるIndexのIDから特定の次元の特定の部分を除く
     pub fn under_under_top(
         &self,
         divison: &mut NeedDivison,

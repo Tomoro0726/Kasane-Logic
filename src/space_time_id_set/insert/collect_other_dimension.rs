@@ -20,6 +20,7 @@ impl SpaceTimeIdSet {
         let mut under_relation: Vec<Relation> = Vec::new();
 
         //代表次元における上位範囲を調べる
+        println!("{:?}について調べる", dim_select);
 
         for top in top_reverse {
             let target = match dim_select {
@@ -53,11 +54,11 @@ impl SpaceTimeIdSet {
             under_relation.push(relation);
         }
 
-        println!("collect_other_dimension");
+        // println!("collect_other_dimension");
 
-        println!("Dim  :{:?}", dim_select);
-        println!("Top  :{:?}", top_relation);
-        println!("Under:{:?}", under_relation);
+        // println!("Dim  :{:?}", dim_select);
+        // println!("Top  :{:?}", top_relation);
+        // println!("Under:{:?}", under_relation);
 
         if top_disjoint && under_disjoint {
             return None;
