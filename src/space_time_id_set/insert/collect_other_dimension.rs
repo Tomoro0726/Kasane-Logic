@@ -7,7 +7,7 @@ use crate::{
 };
 
 impl SpaceTimeIdSet {
-    pub fn collect_other_dimension(
+    pub(crate) fn collect_other_dimension(
         dim: &BitVec,
         dim_select: DimensionSelect,
         top_reverse: &Vec<&ReverseInfo>,
@@ -19,8 +19,6 @@ impl SpaceTimeIdSet {
         let mut top_relation: Vec<Relation> = Vec::new();
         let mut under_relation: Vec<Relation> = Vec::new();
 
-        //代表次元における上位範囲を調べる
-        //println!("{:?}について調べる", dim_select);
 
         for top in top_reverse {
             let target = match dim_select {
@@ -54,11 +52,7 @@ impl SpaceTimeIdSet {
             under_relation.push(relation);
         }
 
-        // println!("collect_other_dimension");
 
-        // println!("Dim  :{:?}", dim_select);
-        // println!("Top  :{:?}", top_relation);
-        // println!("Under:{:?}", under_relation);
 
         if top_disjoint && under_disjoint {
             return None;

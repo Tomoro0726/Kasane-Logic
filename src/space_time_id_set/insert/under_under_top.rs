@@ -1,4 +1,4 @@
-use std::{collections::HashSet, ops::Div};
+
 
 use crate::{
     bit_vec::BitVec,
@@ -13,13 +13,14 @@ pub struct NeedDivison {
 
 impl SpaceTimeIdSet {
     ///自分を切断する
-    pub fn under_under_top(
+    pub(crate) fn under_under_top(
         &self,
         divison: &mut NeedDivison,
         target_bit_index: Index,
         target_dim: DimensionSelect,
     ) {
-        let reverse = self.reverse.get(&target_bit_index).unwrap();
+        let reverse = self.reverse.get(&target_bit_index)
+            .expect("Internal error: reverse index not found in under_under_top");
 
         match target_dim {
             DimensionSelect::F => {

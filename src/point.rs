@@ -10,6 +10,7 @@ pub enum Point {
 }
 
 impl Point {
+    /// Coordinate形式に変換
     pub fn to_coordinate(&self) -> Coordinate {
         match self {
             Point::Coordinate(coordinate) => *coordinate,
@@ -24,6 +25,7 @@ impl Point {
         }
     }
 }
+
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS)]
 pub struct Coordinate {
@@ -40,6 +42,7 @@ pub struct ECEF {
 }
 
 impl ECEF {
+    /// 新しいECEF座標を作成
     pub fn new(x: f64, y: f64, z: f64) -> ECEF {
         ECEF { x, y, z }
     }
@@ -84,12 +87,14 @@ impl ECEF {
         }
     }
 
+    /// 指定されたズームレベルで時空間IDに変換（ECEF版）
     pub fn to_id(&self, z: u8) -> SpaceTimeId {
         self.to_coordinate().to_id(z)
     }
 }
 
 impl Coordinate {
+    /// 新しい座標を作成（範囲チェック付き）
     pub fn new(latitude: f64, longitude: f64, altitude: f64) -> Result<Self, Error> {
         if !(-90.0..=90.0).contains(&latitude) {
             return Err(Error::LatitudeOutOfRange { latitude });
@@ -140,6 +145,7 @@ impl Coordinate {
         }
     }
 
+    /// 指定されたズームレベルで時空間IDに変換（Coordinate版）
     pub fn to_id(&self, z: u8) -> SpaceTimeId {
         let lat = self.latitude;
         let lon = self.longitude;
