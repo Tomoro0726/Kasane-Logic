@@ -1,5 +1,9 @@
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
+
 use crate::{error::Error, space_time_id::SpaceTimeId};
 
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, TS)]
 pub enum Point {
     Coordinate(Coordinate),
     ECEF(ECEF),
@@ -21,14 +25,14 @@ impl Point {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, TS)]
 pub struct Coordinate {
     pub latitude: f64,
     pub longitude: f64,
     pub altitude: f64,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, TS)]
 pub struct ECEF {
     pub x: f64,
     pub y: f64,
