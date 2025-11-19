@@ -22,6 +22,7 @@ impl SpaceTimeIdSet {
             return Relation::Top;
         } else if (target_range.0 < *me) && (me < &target_range.1) {
             println!("UNDER");
+            println!("{}<{}<{}", target_range.0, me, target_range.1);
 
             return Relation::Under;
         } else {

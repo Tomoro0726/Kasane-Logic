@@ -3,29 +3,30 @@ use kasane_logic::{
 };
 
 fn main() {
-    // let test1 = BitVec::from_vec(vec![0b11101111]);
+    // let test1 = BitVec::from_vec(vec![0b10101010, 0b11000000]);
 
     // let (start, end) = test1.under_prefix();
+    // println!("     :{}", test1);
     // println!("START:{}", start);
     // println!("END  :{}", end);
 
     let mut set = SpaceTimeIdSet::new();
 
     let id1 = SpaceTimeId::new(
-        0,
-        [Some(0), Some(0)],
-        [Some(0), Some(0)],
-        [Some(0), Some(0)],
+        4,
+        [Some(15), Some(15)],
+        [Some(1), Some(3)],
+        [Some(6), Some(14)],
         0,
         [None, None],
     )
     .unwrap();
 
     let id2 = SpaceTimeId::new(
-        3,
-        [Some(7), Some(7)],
-        [Some(2), Some(7)],
-        [Some(3), Some(4)],
+        4,
+        [Some(15), Some(15)],
+        [Some(3), Some(3)],
+        [Some(13), Some(14)],
         0,
         [None, None],
     )
