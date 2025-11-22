@@ -5,36 +5,13 @@ use std::io::Write;
 fn main() {
     let mut set = SpaceTimeIdSet::new();
 
-    let id1 = SpaceTimeId::new(
-        5,
-        [Some(-1), Some(10)],
-        [Some(2), Some(10)],
-        [Some(5), Some(10)],
-        10,
-        [Some(10), Some(40)],
-    )
-    .unwrap();
-    let id2 = SpaceTimeId::new(
-        4,
-        [Some(-1), Some(10)],
-        [Some(2), Some(10)],
-        [Some(5), Some(10)],
-        10,
-        [Some(10), Some(40)],
-    )
-    .unwrap();
+    let id1 = SpaceTimeId::new(5, [-1, 10], [2, 10], [5, 10], 10, [10, 40]).unwrap();
+    let id2 = SpaceTimeId::new(4, [-1, 10], [2, 10], [5, 10], 10, [10, 40]).unwrap();
+    let id3 = SpaceTimeId::new(1, [1, 1], [1, 1], [1, 1], 10, [10, 40]).unwrap();
 
-    let id3 = SpaceTimeId::new(
-        1,
-        [Some(1), Some(1)],
-        [Some(1), Some(1)],
-        [Some(1), Some(1)],
-        10,
-        [Some(10), Some(40)],
-    )
-    .unwrap();
+    let mut file1 = File::create("output.txt").expect("cannot create file");
 
-    let mut file = File::create("output.txt").expect("cannot create file");
+    let mut file2 = File::create("output_debug.txt").expect("cannot create file");
 
     set.insert(id1);
     set.insert(id2);
@@ -45,8 +22,10 @@ fn main() {
     println!("{},", id3);
 
     for ele in set.get_all() {
-        writeln!(file, "{},", ele).expect("cannot write to file");
+        writeln!(file1, "{},", ele).expect("cannot write to file");
     }
+
+    writeln!(file2, "{:?},", set).expect("cannot write to file");
 
     println!("output.txt に書き出しました");
 }

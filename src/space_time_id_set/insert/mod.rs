@@ -58,6 +58,8 @@ impl SpaceTimeIdSet {
             })
             .collect();
 
+        println!("{:?}", y_encoded);
+
         while !(f_encoded.is_empty() || x_encoded.is_empty() || y_encoded.is_empty()) {
             let (f_index, f_under_min_val) = {
                 let (i, v) = f_encoded

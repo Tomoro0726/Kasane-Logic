@@ -24,4 +24,7 @@ pub enum Error {
 
     #[error("Altitude '{altitude}' is out of range (valid: -33,554,432.0..=33,554,432.0)")]
     AltitudeOutOfRange { altitude: f64 },
+
+    #[error("Time overflow u64 occurred: t={t}, i={i}")]
+    TimeOverflow { t: u64, i: u64 },
 }

@@ -21,19 +21,19 @@ impl SpaceTimeId {
         SpaceTimeId::new(
             rand_z,
             [
-                Some(rng.random_range(f_min..=f_max)),
-                Some(rng.random_range(f_min..=f_max)),
+                rng.random_range(f_min..=f_max),
+                rng.random_range(f_min..=f_max),
             ],
             [
-                Some(rng.random_range(xy_min..=xy_max)),
-                Some(rng.random_range(xy_min..=xy_max)),
+                rng.random_range(xy_min..=xy_max),
+                rng.random_range(xy_min..=xy_max),
             ],
             [
-                Some(rng.random_range(xy_min..=xy_max)),
-                Some(rng.random_range(xy_min..=xy_max)),
+                rng.random_range(xy_min..=xy_max),
+                rng.random_range(xy_min..=xy_max),
             ],
             0,
-            [None, None],
+            [0, u64::MAX],
         )
         .unwrap()
     }
