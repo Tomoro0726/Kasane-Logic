@@ -1,12 +1,8 @@
 use serde::Serialize;
 pub mod format;
 pub mod random;
-pub mod z_range;
 
-use crate::{
-    error::Error,
-    space_time_id::z_range::{F_MAX, F_MIN, XY_MAX},
-};
+use crate::error::Error;
 
 /// 時空間ID（4次元：3次元空間+時間）
 ///
@@ -19,12 +15,12 @@ use crate::{
 /// - t: 時間範囲
 #[derive(Serialize, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct SpaceTimeId {
-    pub z: u8,
-    pub f: [i64; 2],
-    pub x: [u64; 2],
-    pub y: [u64; 2],
-    pub i: u64,
-    pub t: [u64; 2],
+    pub(crate) z: u8,
+    pub(crate) f: [i64; 2],
+    pub(crate) x: [u64; 2],
+    pub(crate) y: [u64; 2],
+    pub(crate) i: u64,
+    pub(crate) t: [u64; 2],
 }
 impl SpaceTimeId {
     pub fn new(
@@ -35,7 +31,7 @@ impl SpaceTimeId {
         i: u64,
         t: [u64; 2],
     ) -> Result<Self, Error> {
-        if z > 60 {
+        if z > MAX_ZOOM_LEVEL as u8 {
             return Err(Error::ZoomLevelOutOfRange { zoom_level: z });
         }
 
@@ -116,3 +112,39 @@ fn valid_range_y(num: u64, min: u64, max: u64, z: u8) -> Result<(), Error> {
         Err(Error::YOutOfRange { y: num, z })
     }
 }
+
+pub const MAX_ZOOM_LEVEL: usize = 60;
+
+pub const fn gen_xy_max() -> [u64; MAX_ZOOM_LEVEL + 1] {
+    let mut arr = [0u64; MAX_ZOOM_LEVEL + 1];
+    let mut i = 0;
+    while i <= MAX_ZOOM_LEVEL {
+        arr[i] = (1u64 << i) - 1;
+        i += 1;
+    }
+    arr
+}
+
+pub const fn gen_f_min() -> [i64; MAX_ZOOM_LEVEL + 1] {
+    let mut arr = [0i64; MAX_ZOOM_LEVEL + 1];
+    let mut i = 0;
+    while i <= MAX_ZOOM_LEVEL {
+        arr[i] = -(1i64 << i);
+        i += 1;
+    }
+    arr
+}
+
+pub const fn gen_f_max() -> [i64; MAX_ZOOM_LEVEL + 1] {
+    let mut arr = [0i64; MAX_ZOOM_LEVEL + 1];
+    let mut i = 0;
+    while i <= MAX_ZOOM_LEVEL {
+        arr[i] = (1i64 << i) - 1;
+        i += 1;
+    }
+    arr
+}
+
+pub const XY_MAX: [u64; MAX_ZOOM_LEVEL + 1] = gen_xy_max();
+pub const F_MIN: [i64; MAX_ZOOM_LEVEL + 1] = gen_f_min();
+pub const F_MAX: [i64; MAX_ZOOM_LEVEL + 1] = gen_f_max();

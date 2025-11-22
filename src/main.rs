@@ -21,7 +21,7 @@ fn main() {
     println!("{},", id2);
     println!("{},", id3);
 
-    for ele in set.get_all() {
+    for ele in set.iter() {
         writeln!(file1, "{},", ele).expect("cannot write to file");
     }
 

@@ -1,9 +1,6 @@
 use rand::Rng;
 
-use crate::space_time_id::{
-    SpaceTimeId,
-    z_range::{F_MAX, XY_MAX},
-};
+use crate::space_time_id::{F_MAX, SpaceTimeId, XY_MAX};
 
 impl SpaceTimeId {
     ///デバッグ用などのためにランダムな時空間IDを生成する
