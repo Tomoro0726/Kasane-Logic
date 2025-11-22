@@ -1,36 +1,38 @@
-
-
 use crate::{
     bit_vec::BitVec,
-    space_time_id_set::{Index, SpaceTimeIdSet, insert::insert_main_dim::DimensionSelect},
+    space_time_id_set::{
+        Index, ReverseInfo, SpaceTimeIdSet, insert::select_dimensions::DimensionSelect,
+    },
 };
 #[derive(Debug)]
-pub struct NeedDivison {
-    pub f: Vec<BitVec>,
-    pub x: Vec<BitVec>,
-    pub y: Vec<BitVec>,
+pub struct RangesCollect {
+    pub main: Vec<BitVec>,
+    pub a: Vec<BitVec>,
+    pub b: Vec<BitVec>,
 }
 
 impl SpaceTimeIdSet {
     ///自分を切断する
     pub(crate) fn under_under_top(
         &self,
-        divison: &mut NeedDivison,
+        divison: &mut RangesCollect,
         target_bit_index: Index,
-        target_dim: DimensionSelect,
+        target_dim: &DimensionSelect,
     ) {
-        let reverse = self.reverse.get(&target_bit_index)
+        let reverse = self
+            .reverse
+            .get(&target_bit_index)
             .expect("Internal error: reverse index not found in under_under_top");
 
         match target_dim {
             DimensionSelect::F => {
-                divison.f.push(reverse.f.clone());
+                divison.main.push(reverse.f.clone());
             }
             DimensionSelect::X => {
-                divison.x.push(reverse.x.clone());
+                divison.main.push(reverse.x.clone());
             }
             DimensionSelect::Y => {
-                divison.y.push(reverse.y.clone());
+                divison.main.push(reverse.y.clone());
             }
         }
     }

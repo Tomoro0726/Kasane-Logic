@@ -1,30 +1,14 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, btree_map::Range};
 
 use itertools::iproduct;
 
 use crate::{
     bit_vec::{BitVec, relation::BitVecRelation},
     space_time_id_set::{
-        Index, Interval, ReverseInfo, SpaceTimeIdSet, insert::under_under_top::NeedDivison,
+        Index, Interval, ReverseInfo, SpaceTimeIdSet,
+        insert::{select_dimensions::DimensionSelect, under_under_top::RangesCollect},
     },
 };
-
-#[derive(Clone, Copy, Debug)]
-pub enum DimensionSelect {
-    F,
-    X,
-    Y,
-}
-
-impl DimensionSelect {
-    pub fn as_index(&self) -> usize {
-        match self {
-            DimensionSelect::F => 0,
-            DimensionSelect::X => 1,
-            DimensionSelect::Y => 2,
-        }
-    }
-}
 
 impl SpaceTimeIdSet {
     /// 代表次元×他の次元を挿入処理する
@@ -32,21 +16,17 @@ impl SpaceTimeIdSet {
         &mut self,
         main_bit: &BitVec,
         main_index: &Index,
-        main_under_count: &usize,
+        main_descendant_count: &usize,
         main_encoded: &mut Vec<(Index, BitVec)>,
         a_encoded: &Vec<(Index, BitVec)>,
         b_encoded: &Vec<(Index, BitVec)>,
         main_dim_select: DimensionSelect,
     ) {
-        let main_under: Vec<Index> = Self::collect_top(&self, main_bit, &main_dim_select);
+        let main_ancestors: Vec<Index> = Self::collect_ancestors(&self, main_bit, &main_dim_select);
 
-        if main_under.is_empty() && *main_under_count == 0 {
+        if main_ancestors.is_empty() && *main_descendant_count == 0 {
             for ((_, a_bit), (_, b_bit)) in iproduct!(a_encoded, b_encoded) {
-                match main_dim_select {
-                    DimensionSelect::F => self.uncheck_insert(main_bit, a_bit, b_bit),
-                    DimensionSelect::X => self.uncheck_insert(a_bit, main_bit, b_bit),
-                    DimensionSelect::Y => self.uncheck_insert(a_bit, b_bit, main_bit),
-                };
+                self.uncheck_insert(main_bit, a_bit, b_bit, &main_dim_select);
             }
             let _removed = main_encoded.remove(*main_index);
             return;
@@ -64,7 +44,7 @@ impl SpaceTimeIdSet {
         }
 
         let mut under_reverse = vec![];
-        for under_index in &main_under {
+        for under_index in &main_ancestors {
             under_reverse.push(
                 self.reverse
                     .get(&*under_index)
@@ -96,7 +76,7 @@ impl SpaceTimeIdSet {
         for (_, a_dim) in a_encoded {
             a_relations.push(Self::collect_other_dimension(
                 a_dim,
-                a_dim_select,
+                &a_dim_select,
                 &top_reverse,
                 &under_reverse,
             ));
@@ -105,7 +85,7 @@ impl SpaceTimeIdSet {
         for (_, b_dim) in b_encoded {
             b_relations.push(Self::collect_other_dimension(
                 b_dim,
-                b_dim_select,
+                &b_dim_select,
                 &top_reverse,
                 &under_reverse,
             ));
@@ -121,11 +101,11 @@ impl SpaceTimeIdSet {
             let a_relation = match a {
                 Some(v) => v,
                 None => {
-                    self.uncheck_insert_dim(
-                        main_dim_select,
+                    self.uncheck_insert(
                         main_bit,
                         &a_encoded[a_encode_index].1,
                         &b_encoded[b_encode_index].1,
+                        &main_dim_select,
                     );
                     continue;
                 }
@@ -134,20 +114,20 @@ impl SpaceTimeIdSet {
             let b_relation = match b {
                 Some(v) => v,
                 None => {
-                    self.uncheck_insert_dim(
-                        main_dim_select,
+                    self.uncheck_insert(
                         main_bit,
                         &a_encoded[a_encode_index].1,
                         &b_encoded[b_encode_index].1,
+                        &main_dim_select,
                     );
                     continue;
                 }
             };
 
-            let mut need_divison = NeedDivison {
-                f: vec![],
-                x: vec![],
-                y: vec![],
+            let mut need_divison = RangesCollect {
+                main: vec![],
+                a: vec![],
+                b: vec![],
             };
 
             let mut need_delete_inside: HashSet<Index> = HashSet::new();
@@ -165,7 +145,7 @@ impl SpaceTimeIdSet {
                         self.top_top_under(
                             main_top[i],
                             b_encoded[b_encode_index].1.clone(),
-                            b_dim_select,
+                            &b_dim_select,
                             &mut need_delete_inside,
                             &mut need_insert_inside,
                         );
@@ -174,13 +154,13 @@ impl SpaceTimeIdSet {
                         self.top_top_under(
                             main_top[i],
                             a_encoded[a_encode_index].1.clone(),
-                            a_dim_select,
+                            &a_dim_select,
                             &mut need_delete_inside,
                             &mut need_insert_inside,
                         );
                     }
                     (BitVecRelation::Less, BitVecRelation::Less) => {
-                        self.under_under_top(&mut need_divison, main_top[i], main_dim_select);
+                        self.under_under_top(&mut need_divison, main_top[i], &main_dim_select);
                     }
                     _ => {}
                 }
@@ -193,18 +173,18 @@ impl SpaceTimeIdSet {
                         BitVecRelation::Greater | BitVecRelation::Equal,
                     ) => {
                         self.top_top_under(
-                            main_under[i],
+                            main_ancestors[i],
                             main_bit.clone(),
-                            main_dim_select,
+                            &main_dim_select,
                             &mut need_delete_inside,
                             &mut need_insert_inside,
                         );
                     }
                     (BitVecRelation::Greater | BitVecRelation::Equal, BitVecRelation::Less) => {
-                        self.under_under_top(&mut need_divison, main_under[i], a_dim_select);
+                        self.under_under_top(&mut need_divison, main_ancestors[i], &a_dim_select);
                     }
                     (BitVecRelation::Less, BitVecRelation::Greater | BitVecRelation::Equal) => {
-                        self.under_under_top(&mut need_divison, main_under[i], b_dim_select);
+                        self.under_under_top(&mut need_divison, main_ancestors[i], &b_dim_select);
                     }
                     (BitVecRelation::Less, BitVecRelation::Less) => {
                         continue 'outer;
@@ -213,36 +193,15 @@ impl SpaceTimeIdSet {
                 }
             }
 
-            let f_splited;
-            let x_splited;
-            let y_splited;
+            let main_splited = main_bit.subtract_ranges(&need_divison.main);
 
-            match main_dim_select {
-                DimensionSelect::F => {
-                    f_splited = main_bit.subtract_ranges(&need_divison.f);
+            let a_splited = a_encoded[a_encode_index]
+                .1
+                .subtract_ranges(&need_divison.main);
+            let b_splited = b_encoded[b_encode_index].1.subtract_ranges(&need_divison.b);
 
-                    x_splited = a_encoded[a_encode_index].1.subtract_ranges(&need_divison.x);
-
-                    y_splited = b_encoded[b_encode_index].1.subtract_ranges(&need_divison.y);
-                }
-                DimensionSelect::X => {
-                    f_splited = a_encoded[a_encode_index].1.subtract_ranges(&need_divison.f);
-
-                    x_splited = main_bit.subtract_ranges(&need_divison.x);
-
-                    y_splited = b_encoded[b_encode_index].1.subtract_ranges(&need_divison.y);
-                }
-                DimensionSelect::Y => {
-                    f_splited = a_encoded[a_encode_index].1.subtract_ranges(&need_divison.x);
-
-                    x_splited = b_encoded[b_encode_index].1.subtract_ranges(&need_divison.x);
-
-                    y_splited = main_bit.subtract_ranges(&need_divison.y);
-                }
-            }
-
-            for (f, x, y) in iproduct!(f_splited, x_splited, y_splited) {
-                self.uncheck_insert(&f, &x, &y);
+            for (main, a, b) in iproduct!(main_splited, a_splited, b_splited) {
+                self.uncheck_insert(&main, &a, &b, &main_dim_select);
             }
 
             need_delete.extend(need_delete_inside);
@@ -252,7 +211,7 @@ impl SpaceTimeIdSet {
             self.uncheck_delete(&need_delete_index);
         }
         for reverse in need_insert {
-            self.uncheck_insert(&reverse.f, &reverse.x, &reverse.y);
+            self.uncheck_insert(&reverse.f, &reverse.x, &reverse.y, &DimensionSelect::F);
         }
 
         main_encoded.remove(*main_index);

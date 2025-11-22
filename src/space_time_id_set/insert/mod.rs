@@ -5,7 +5,7 @@ use crate::{
     space_time_id::SpaceTimeId,
     space_time_id_set::{
         Interval, SpaceTimeIdSet,
-        insert::insert_main_dim::DimensionSelect,
+        insert::select_dimensions::DimensionSelect,
         single::{
             convert_bitvec_f::convert_bitmask_f, convert_bitvec_xy::convert_bitmask_xy,
             convert_single_f::convert_f, convert_single_xy::convert_xy,
@@ -22,7 +22,6 @@ pub mod select_dimensions;
 pub mod top_top_under;
 pub mod uncheck_delete;
 pub mod uncheck_insert;
-pub mod uncheck_insert_dim;
 pub mod under_under_top;
 
 impl SpaceTimeIdSet {

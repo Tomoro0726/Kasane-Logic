@@ -1,6 +1,6 @@
 use crate::{
     bit_vec::BitVec,
-    space_time_id_set::{Index, SpaceTimeIdSet, insert::insert_main_dim::DimensionSelect},
+    space_time_id_set::{Index, SpaceTimeIdSet, insert::select_dimensions::DimensionSelect},
 };
 
 use std::ops::Bound::Excluded;
@@ -14,7 +14,7 @@ impl SpaceTimeIdSet {
     ) -> Vec<Index> {
         let mut main_under = Vec::new();
 
-        let dims = self.select_dimensions(&main_dim_select);
+        let dims = self.dims_btree(&main_dim_select);
 
         for (_, layerinfo) in dims
             .main

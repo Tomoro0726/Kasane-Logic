@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use crate::{
     bit_vec::BitVec,
     space_time_id_set::{
-        Index, ReverseInfo, SpaceTimeIdSet, insert::insert_main_dim::DimensionSelect,
+        Index, ReverseInfo, SpaceTimeIdSet, insert::select_dimensions::DimensionSelect,
     },
 };
 
@@ -13,7 +13,7 @@ impl SpaceTimeIdSet {
         &mut self,
         target_index: Index,
         target_bit: BitVec,
-        target_dim: DimensionSelect,
+        target_dim: &DimensionSelect,
         need_delete: &mut HashSet<Index>,
         need_insert: &mut HashSet<ReverseInfo>,
     ) {

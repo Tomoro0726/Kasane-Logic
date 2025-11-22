@@ -2,17 +2,17 @@ use std::collections::HashSet;
 
 use crate::{
     bit_vec::BitVec,
-    space_time_id_set::{Index, SpaceTimeIdSet, insert::insert_main_dim::DimensionSelect},
+    space_time_id_set::{Index, SpaceTimeIdSet, insert::select_dimensions::DimensionSelect},
 };
 
 impl SpaceTimeIdSet {
-    /// 指定された次元において、
-    pub(crate) fn collect_top(
+    /// 指定された次元において、自分を含む祖先のインデックスを収集する
+    pub(crate) fn collect_ancestors(
         &self,
         main_bit: &BitVec,
         main_dim_select: &DimensionSelect,
     ) -> Vec<Index> {
-        let dims = self.select_dimensions(&main_dim_select);
+        let dims = self.dims_btree(main_dim_select);
 
         let mut result = HashSet::new();
 

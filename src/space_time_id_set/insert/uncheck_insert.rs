@@ -2,23 +2,33 @@ use std::collections::{BTreeMap, HashSet};
 
 use crate::{
     bit_vec::BitVec,
-    space_time_id_set::{Interval, LayerInfo, ReverseInfo, SpaceTimeIdSet},
+    space_time_id_set::{
+        LayerInfo, ReverseInfo, SpaceTimeIdSet, insert::select_dimensions::DimensionSelect,
+    },
 };
 
 impl SpaceTimeIdSet {
-    pub(crate) fn uncheck_insert(&mut self, f: &BitVec, x: &BitVec, y: &BitVec) {
+    pub(crate) fn uncheck_insert(
+        &mut self,
+        main: &BitVec,
+        a: &BitVec,
+        b: &BitVec,
+        main_dim_select: &DimensionSelect,
+    ) {
         let index = self.generate_index();
+        let mut dims = self.dims_btree_mut(main_dim_select);
+        let map = Self::map_dims(main, a, b, main_dim_select);
 
-        Self::update_layer(&mut self.f, f, index);
-        Self::update_layer(&mut self.x, x, index);
-        Self::update_layer(&mut self.y, y, index);
+        Self::update_layer(&mut dims.main, main, index);
+        Self::update_layer(&mut dims.a, a, index);
+        Self::update_layer(&mut dims.b, b, index);
 
         self.reverse.insert(
             index,
             ReverseInfo {
-                f: f.clone(),
-                x: x.clone(),
-                y: y.clone(),
+                f: map.f.clone(),
+                x: map.x.clone(),
+                y: map.y.clone(),
             },
         );
     }
