@@ -57,12 +57,6 @@ impl SpaceTimeIdSet {
             })
             .collect();
 
-        let interval = Interval {
-            t1: id.t[0],
-            t2: id.t[1],
-            i: id.i,
-        };
-
         while !(f_encoded.is_empty() || x_encoded.is_empty() || y_encoded.is_empty()) {
             let (f_index, f_under_min_val) = {
                 let (i, v) = f_encoded
@@ -103,7 +97,6 @@ impl SpaceTimeIdSet {
                     &mut f_encoded,
                     &[&x_encoded, &y_encoded],
                     DimensionSelect::F,
-                    &interval,
                 );
             } else if min_under == x_under_min_val.0 {
                 self.insert_main_dim(
@@ -113,7 +106,6 @@ impl SpaceTimeIdSet {
                     &mut x_encoded,
                     &[&f_encoded, &y_encoded],
                     DimensionSelect::X,
-                    &interval,
                 );
             } else {
                 self.insert_main_dim(
@@ -123,7 +115,6 @@ impl SpaceTimeIdSet {
                     &mut y_encoded,
                     &[&f_encoded, &x_encoded],
                     DimensionSelect::Y,
-                    &interval,
                 );
             }
         }

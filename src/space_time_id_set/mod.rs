@@ -42,7 +42,6 @@ pub struct SpaceTimeIdSet {
     f: BTreeMap<BitVec, LayerInfo>,
     x: BTreeMap<BitVec, LayerInfo>,
     y: BTreeMap<BitVec, LayerInfo>,
-    t: BTreeMap<(u64, Index), Interval>,
     index: usize,
     reverse: HashMap<Index, ReverseInfo>,
 }
@@ -53,7 +52,6 @@ impl SpaceTimeIdSet {
             f: BTreeMap::new(),
             x: BTreeMap::new(),
             y: BTreeMap::new(),
-            t: BTreeMap::new(),
             index: 0,
             reverse: HashMap::new(),
         }

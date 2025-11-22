@@ -37,7 +37,6 @@ impl SpaceTimeIdSet {
         main_encoded: &mut Vec<(Index, BitVec)>,
         other_encoded: &[&Vec<(Index, BitVec)>; 2],
         main_dim_select: DimensionSelect,
-        interval: &Interval,
     ) {
         let main_under: Vec<Index> = Self::collect_top(&self, main_bit, &main_dim_select);
 
