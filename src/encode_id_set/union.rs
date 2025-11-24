@@ -1,4 +1,4 @@
-use crate::encode_id_set::{EncodeIDSet, insert::select_dimensions::DimensionSelect};
+use crate::encode_id_set::EncodeIDSet;
 
 impl EncodeIDSet {
     /// 二つのSpaceTimeIDSetを結合する

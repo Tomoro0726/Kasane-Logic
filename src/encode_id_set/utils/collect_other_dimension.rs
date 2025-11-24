@@ -1,7 +1,7 @@
 use crate::{
     bit_vec::{BitVec, relation::BitVecRelation},
     encode_id::EncodeID,
-    encode_id_set::{EncodeIDSet, insert::select_dimensions::DimensionSelect},
+    encode_id_set::{EncodeIDSet, utils::select_dimensions::DimensionSelect},
 };
 
 impl EncodeIDSet {

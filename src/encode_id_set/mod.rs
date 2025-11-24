@@ -5,10 +5,12 @@ use crate::{bit_vec::BitVec, encode_id::EncodeID};
 ///Set内部におけるIDの一意な番号
 type Index = usize;
 
+pub mod get;
 pub mod insert;
 pub mod intersection;
 pub mod iterator;
 pub mod union;
+pub mod utils;
 
 /// 階層ごとの情報を保持する構造体
 #[derive(Debug, Clone)]

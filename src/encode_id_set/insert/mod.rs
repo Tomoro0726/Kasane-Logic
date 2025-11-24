@@ -7,18 +7,12 @@ use crate::{
     encode_id::EncodeID,
     encode_id_set::{
         EncodeIDSet, Index,
-        insert::{self, select_dimensions::DimensionSelect, split_self::RangesCollect},
+        insert::{self, split_self::RangesCollect},
+        utils::select_dimensions::DimensionSelect,
     },
 };
-pub mod collect_ancestors;
-pub mod collect_descendants;
-pub mod collect_other_dimension;
-pub mod generate_index;
-pub mod select_dimensions;
 pub mod split_other;
 pub mod split_self;
-pub mod uncheck_delete;
-pub mod uncheck_insert;
 
 impl EncodeIDSet {
     ///EncodeIDSetに新規のEncodeIDを挿入する。
