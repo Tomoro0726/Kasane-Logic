@@ -1,37 +1,45 @@
-use crate::{encode_id::EncodeID, encode_id_set::EncodeIDSet, space_time_id::SpaceTimeID};
+use crate::{encode_id::EncodeID, encode_id_set::EncodeIDSet};
 
-pub struct SpaceTimeIDSetIter<'a> {
-    reverse_iter: std::collections::hash_map::Iter<'a, usize, EncodeID>,
+pub struct EncodeIDSetIter<'a> {
+    inner_iter: crate::encode_id_map::iterator::EncodeIDMapIter<'a, ()>,
 }
 
 impl EncodeIDSet {
-    pub fn iter(&'_ self) -> SpaceTimeIDSetIter<'_> {
-        SpaceTimeIDSetIter {
-            reverse_iter: self.reverse.iter(),
+    pub fn iter(&'_ self) -> EncodeIDSetIter<'_> {
+        EncodeIDSetIter {
+            inner_iter: self.inner().iter(),
         }
+    }
+
+    pub fn len(&self) -> usize {
+        self.inner().len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.inner().is_empty()
     }
 }
 
-impl<'a> Iterator for SpaceTimeIDSetIter<'a> {
+impl<'a> Iterator for EncodeIDSetIter<'a> {
     type Item = EncodeID;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let (_index, encode_id) = self.reverse_iter.next()?; // &usize, &EncodeID
-        Some(encode_id.clone())
+        let (encode_id, _) = self.inner_iter.next()?;
+        Some(encode_id)
     }
 }
 
 impl<'a> IntoIterator for &'a EncodeIDSet {
     type Item = EncodeID;
-    type IntoIter = SpaceTimeIDSetIter<'a>;
+    type IntoIter = EncodeIDSetIter<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 
-impl<'a> ExactSizeIterator for SpaceTimeIDSetIter<'a> {
+impl<'a> ExactSizeIterator for EncodeIDSetIter<'a> {
     fn len(&self) -> usize {
-        self.reverse_iter.len()
+        self.inner_iter.len()
     }
 }

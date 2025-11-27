@@ -4,7 +4,7 @@ impl EncodeIDSet {
     /// 二つのSpaceTimeIDSetを結合する
     pub fn union(&self, other: &EncodeIDSet) -> EncodeIDSet {
         // IDの個数が少ないほうを small、多いほうを large にする
-        let (small, large) = if self.iter().len() <= other.iter().len() {
+        let (small, large) = if self.len() <= other.len() {
             (self, other)
         } else {
             (other, self)
@@ -12,8 +12,8 @@ impl EncodeIDSet {
 
         // large をコピーして small の内容を挿入する
         let mut result = large.clone();
-        for (_, reverse) in small.reverse.clone() {
-            result.uncheck_insert(reverse);
+        for encode_id in small.iter() {
+            result.uncheck_insert(encode_id);
         }
 
         result

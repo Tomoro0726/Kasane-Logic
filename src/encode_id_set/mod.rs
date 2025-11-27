@@ -1,9 +1,4 @@
-use std::collections::{BTreeMap, HashMap, HashSet};
-
-use crate::{bit_vec::BitVec, encode_id::EncodeID};
-
-///Set内部におけるIDの一意な番号
-type Index = usize;
+use crate::encode_id_map::EncodeIDMap;
 
 pub mod difference;
 pub mod get;
@@ -12,38 +7,39 @@ pub mod intersection;
 pub mod iterator;
 pub mod remove;
 pub mod union;
-pub mod utils;
 
-/// 階層ごとの情報を保持する構造体
-#[derive(Debug, Clone)]
-pub struct LayerInfo {
-    //その階層が持つ実際のIDのIndex
-    pub index: HashSet<Index>,
-
-    //その階層の下にあるIDの個数
-    pub count: usize,
-}
+// Re-export LayerInfo from encode_id_map for backward compatibility
+pub use crate::encode_id_map::LayerInfo;
 
 /// 時空間IDの集合を効率的に管理するデータ構造
 /// 重複する範囲を自動的に統合し、階層構造を用いて効率的に格納する。
+/// 内部的には`EncodeIDMap<()>`を使用しています。
 #[derive(Debug, Clone)]
 pub struct EncodeIDSet {
-    //各次元の範囲を保存するためのBTreeMap
-    f: BTreeMap<BitVec, LayerInfo>,
-    x: BTreeMap<BitVec, LayerInfo>,
-    y: BTreeMap<BitVec, LayerInfo>,
-    index: usize,
-    reverse: HashMap<Index, EncodeID>,
+    inner: EncodeIDMap<()>,
 }
+
 impl EncodeIDSet {
     /// 新しい空の時空間ID集合を作成
     pub fn new() -> Self {
         Self {
-            f: BTreeMap::new(),
-            x: BTreeMap::new(),
-            y: BTreeMap::new(),
-            index: 0,
-            reverse: HashMap::new(),
+            inner: EncodeIDMap::new(),
         }
+    }
+
+    /// 内部のEncodeIDMapへの参照を取得する
+    pub(crate) fn inner(&self) -> &EncodeIDMap<()> {
+        &self.inner
+    }
+
+    /// 内部のEncodeIDMapへの可変参照を取得する
+    pub(crate) fn inner_mut(&mut self) -> &mut EncodeIDMap<()> {
+        &mut self.inner
+    }
+}
+
+impl Default for EncodeIDSet {
+    fn default() -> Self {
+        Self::new()
     }
 }
