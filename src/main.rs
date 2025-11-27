@@ -77,12 +77,12 @@ fn main() {
     });
 
     for ele in set1.iter() {
-        writeln!(file1, "{},", ele).expect("cannot write to file");
+        writeln!(file1, "{},", ele.decode()).expect("cannot write to file");
     }
 
     let set3 = set1.intersection(&set2);
 
     for ele in set3.iter() {
-        writeln!(file2, "{},", ele).expect("cannot write to file");
+        writeln!(file2, "{},", ele.decode()).expect("cannot write to file");
     }
 }

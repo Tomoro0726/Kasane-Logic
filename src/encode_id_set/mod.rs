@@ -25,9 +25,7 @@ pub struct LayerInfo {
 }
 
 /// 時空間IDの集合を効率的に管理するデータ構造
-///
 /// 重複する範囲を自動的に統合し、階層構造を用いて効率的に格納する。
-/// 公開APIは`insert`と`get_all`のみ。
 #[derive(Debug, Clone)]
 pub struct EncodeIDSet {
     //各次元の範囲を保存するためのBTreeMap

@@ -13,17 +13,16 @@ impl EncodeIDSet {
 }
 
 impl<'a> Iterator for SpaceTimeIDSetIter<'a> {
-    type Item = SpaceTimeID;
+    type Item = EncodeID;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let (_index, encode_id) = self.reverse_iter.next()?; // <-- ここが(usize, ReverseInfo)
-
-        Some(encode_id.decode())
+        let (_index, encode_id) = self.reverse_iter.next()?; // &usize, &EncodeID
+        Some(encode_id.clone())
     }
 }
 
 impl<'a> IntoIterator for &'a EncodeIDSet {
-    type Item = SpaceTimeID;
+    type Item = EncodeID;
     type IntoIter = SpaceTimeIDSetIter<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
