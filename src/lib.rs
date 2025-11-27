@@ -48,4 +48,5 @@ pub mod encode_id_set;
 pub mod encode_id_map;
 
 pub mod encode_id;
+pub mod encode_id_kv;
 pub mod macros;
