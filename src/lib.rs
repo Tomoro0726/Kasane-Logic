@@ -6,6 +6,7 @@
 //!
 //! - `SpaceTimeID`: 時空間IDの定義と操作
 //! - `EncodeIDSet`: 時空間IDの集合を効率的に管理
+//! - `EncodeIDMap`: 時空間IDから任意の値へのマッピングを効率的に管理
 //! - `Point`: 座標変換を提供するトレイト（緯度経度高度 ⇔ ECEF）
 //! - `function`: 幾何形状（点、線、三角形）から時空間IDを生成
 //!
@@ -42,6 +43,9 @@ pub mod space_time_id;
 
 /// 時空間IDの集合を効率的に管理
 pub mod encode_id_set;
+
+/// 時空間IDから任意の値へのマッピングを効率的に管理
+pub mod encode_id_map;
 
 pub mod encode_id;
 pub mod macros;

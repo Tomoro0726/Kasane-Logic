@@ -1,8 +1,8 @@
-use crate::{encode_id::EncodeID, encode_id_set::EncodeIDSet};
+use crate::encode_id_set::EncodeIDSet;
 
 impl EncodeIDSet {
     pub fn difference(&self, other: &EncodeIDSet) -> EncodeIDSet {
-        let (small, large) = if self.iter().len() <= other.iter().len() {
+        let (small, large) = if self.len() <= other.len() {
             (self, other)
         } else {
             (other, self)
@@ -10,8 +10,8 @@ impl EncodeIDSet {
 
         // large をコピーして small の内容を削除するする
         let mut result = large.clone();
-        for (_, reverse) in small.reverse.clone() {
-            result.remove(reverse);
+        for encode_id in small.iter() {
+            result.remove(encode_id);
         }
 
         result
