@@ -3,10 +3,12 @@ pub mod fmt;
 use std::i64;
 
 use crate::{
+    encode_id::EncodeID,
     error::Error,
     space_id::{
         SpaceID,
         constants::{F_MAX, F_MIN, XY_MAX},
+        segment::Segment,
     },
 };
 
@@ -174,11 +176,29 @@ impl SpaceID for SingleID {
         Ok(())
     }
 
-    fn to_encode(&self) -> crate::encode_id::EncodeID {
-        todo!()
-    }
+    fn into_encode(self) -> EncodeID {
+        let f_bitvec = Segment {
+            z: self.z,
+            dim: self.f,
+        }
+        .to_bitvec();
 
-    fn into_encode(self) -> crate::encode_id::EncodeID {
-        todo!()
+        let x_bitvec = Segment {
+            z: self.z,
+            dim: self.x,
+        }
+        .to_bitvec();
+
+        let y_bitvec = Segment {
+            z: self.z,
+            dim: self.y,
+        }
+        .to_bitvec();
+
+        EncodeID {
+            f: vec![f_bitvec],
+            x: vec![x_bitvec],
+            y: vec![y_bitvec],
+        }
     }
 }

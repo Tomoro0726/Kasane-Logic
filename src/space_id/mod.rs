@@ -1,11 +1,11 @@
 use crate::{encode_id::EncodeID, error::Error};
 
 pub mod constants;
-pub mod encode;
 pub mod range_id;
+pub mod segment;
 pub mod single_id;
 
-trait SpaceID {
+pub trait SpaceID {
     fn min_f(&self) -> i64;
     fn max_f(&self) -> i64;
     fn max_xy(&self) -> u64;
@@ -22,6 +22,5 @@ trait SpaceID {
     fn set_x(&mut self, value: u64) -> Result<(), Error>;
     fn set_y(&mut self, value: u64) -> Result<(), Error>;
 
-    fn to_encode(&self) -> EncodeID;
     fn into_encode(self) -> EncodeID;
 }
