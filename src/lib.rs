@@ -26,26 +26,24 @@
 //! // set.insert(point.to_id(25).to_encode().first().unwrap().clone());
 //! ```
 
-/// ビット列を用いた階層構造の管理
+// /// ビット列を用いた階層構造の管理
 pub mod bit_vec;
 
-/// エラー型の定義
+// /// エラー型の定義
 pub mod error;
 
-/// 幾何形状から時空間IDを生成する関数群
-pub mod function;
+// /// 幾何形状から時空間IDを生成する関数群
+// pub mod function;
 
-/// 座標変換を提供するトレイトと座標系の定義
-pub mod point;
+// /// 座標変換を提供するトレイトと座標系の定義
+// pub mod point;
 
-/// 時空間IDの定義と操作
-pub mod space_time_id;
+// /// 時空間IDの集合を効率的に管理
+// pub mod encode_id_set;
 
-/// 時空間IDの集合を効率的に管理
-pub mod encode_id_set;
-
-/// 時空間IDから任意の値へのマッピングを効率的に管理
-pub mod encode_id_map;
+// /// 時空間IDから任意の値へのマッピングを効率的に管理
+// // pub mod encode_id_map;
 
 pub mod encode_id;
 pub mod macros;
+pub mod space_id;

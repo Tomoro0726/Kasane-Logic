@@ -1,8 +1,13 @@
-use core::fmt;
+use std::fmt;
 
-use crate::space_time_id::SpaceTimeID;
+pub struct RangeID {
+    z: u8,
+    f: [i64; 2],
+    x: [u64; 2],
+    y: [u64; 2],
+}
 
-impl fmt::Display for SpaceTimeID {
+impl fmt::Display for RangeID {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,

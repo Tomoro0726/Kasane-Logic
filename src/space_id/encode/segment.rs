@@ -40,7 +40,7 @@ pub fn segment_f(z: u8, dimension: [i64; 2]) -> Vec<(u8, i64)> {
     result
 }
 
-pub(crate) fn segment_xy(z: u8, dimension: [u64; 2]) -> Vec<(u8, u64)> {
+pub fn segment_xy(z: u8, dimension: [u64; 2]) -> Vec<(u8, u64)> {
     let mut target = dimension;
     let mut now_z = z;
     let mut result = Vec::new();
