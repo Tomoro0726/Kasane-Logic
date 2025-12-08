@@ -76,12 +76,14 @@ impl SingleID {
     pub fn parent(&self, difference: u8) -> Option<SingleID> {
         match self.z.checked_sub(difference) {
             Some(z) => {
-                return Some(SingleID {
-                    z,
-                    f: self.f / (2_i64.pow(difference.into())),
-                    x: self.x / (2_u64.pow(difference.into())),
-                    y: self.y / (2_u64.pow(difference.into())),
-                });
+                let f = match self.f {
+                    -1 => -1,
+                    n => n / (1_i64 << difference),
+                };
+                let x = self.x / (2_u64.pow(difference.into()));
+                let y = self.y / (2_u64.pow(difference.into()));
+
+                return Some(SingleID { z, f, x, y });
             }
             None => {
                 return None;

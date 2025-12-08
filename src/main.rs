@@ -1,7 +1,7 @@
 use kasane_logic::space_id::single::SingleID;
 
 fn main() {
-    let mut id = SingleID::new(9, 30, 90, 55).unwrap();
+    let mut id = SingleID::new(9, -24, 90, 55).unwrap();
 
     println!("{},", id);
 
