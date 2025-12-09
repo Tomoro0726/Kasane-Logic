@@ -1,4 +1,4 @@
-use crate::{geometry::ecef::Ecef as ECEF, error::Error, id::space_id::single::SingleID};
+use crate::{error::Error, geometry::ecef::Ecef as ECEF, id::space_id::single::SingleID};
 
 /// WGS-84楕円体の長半径（赤道半径）[m]
 pub const WGS84_A: f64 = 6_378_137.0;
@@ -14,7 +14,7 @@ pub struct Coordinate {
 
 impl Coordinate {
     pub fn new(latitude: f64, longitude: f64, altitude: f64) -> Result<Self, Error> {
-        if !(-90.0..=90.0).contains(&latitude) {
+        if !(-85.0511..=85.0511).contains(&latitude) {
             return Err(Error::LatitudeOutOfRange { latitude });
         }
 
