@@ -8,6 +8,5 @@
 //! - [`encode`]: エンコードされたIDの表現
 
 pub mod space_id;
-pub use space_id::SpaceID;
 
 pub mod space_id_map;

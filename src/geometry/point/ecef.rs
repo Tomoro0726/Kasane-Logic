@@ -1,5 +1,5 @@
 use crate::{
-    Error,
+    error::Error,
     geometry::{
         constants::{WGS84_A, WGS84_INV_F},
         point::{Point, coordinate::Coordinate},

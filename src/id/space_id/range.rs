@@ -3,10 +3,10 @@ use itertools::iproduct;
 use std::fmt;
 
 use crate::{
-    SpaceID,
     bit_vec::BitVec,
     error::Error,
     id::space_id::{
+        SpaceID,
         constants::{F_MAX, F_MIN, XY_MAX},
         encode::EncodeID,
         helpers,

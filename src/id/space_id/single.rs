@@ -3,9 +3,9 @@ use itertools::iproduct;
 use std::fmt;
 
 use crate::{
-    SpaceID,
     error::Error,
     id::space_id::{
+        SpaceID,
         constants::{F_MAX, F_MIN, XY_MAX},
         encode::EncodeID,
         helpers,
@@ -27,6 +27,39 @@ impl fmt::Display for SingleID {
 }
 
 impl SingleID {
+    /// 指定された値から [`SingleID`] を構築します。
+    ///
+    /// このコンストラクタは、与えられた `z`, `f`, `x`, `y` が  
+    /// 各ズームレベルにおける範囲内にあるかを検証し、  
+    /// 範囲外の場合は [`Error`] を返します。
+    ///
+    /// # パラメータ
+    /// * `z` — ズームレベル（0–63 の本ライブラリでは有効）  
+    /// * `f` — 高度成分（`z` に対応する量子化レンジ内である必要があります）  
+    /// * `x` — 経度方向のタイルインデックス  
+    /// * `y` — 緯度方向のタイルインデックス
+    ///
+    /// # バリデーション
+    /// - `z` が 63 を超える場合、[`Error::ZoomLevelOutOfRange`] を返します。  
+    /// - `f` がズームレベル `z` に対する `F_MIN[z]..=F_MAX[z]` の範囲外の場合、  
+    ///   [`Error::FOutOfRange`] を返します。  
+    /// - `x` または `y` が `0..=XY_MAX[z]` の範囲外の場合、  
+    ///   それぞれ [`Error::XOutOfRange`]、[`Error::YOutOfRange`] を返します。
+    ///
+    /// # 戻り値
+    /// 範囲検証に成功した場合は、対応する [`SingleID`] を返します。
+    ///
+    /// # 例
+    /// ```
+    /// let id = SingleID::new(10, 0, 512, 512).unwrap();
+    /// assert_eq!(id.z, 10);
+    /// ```
+    ///
+    /// エラー例:
+    ///
+    /// ```
+    /// assert!(SingleID::new(70, 0, 0, 0).is_err()); // z が範囲外
+    /// ```
     pub fn new(z: u8, f: i64, x: u64, y: u64) -> Result<SingleID, Error> {
         if z > 63u8 {
             return Err(Error::ZoomLevelOutOfRange { z });
