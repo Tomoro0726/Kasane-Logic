@@ -1,6 +1,5 @@
-// src/id/space_id/single.rs
 use itertools::iproduct;
-use std::{collections::btree_map::Range, fmt, u64};
+use std::{fmt, u64};
 
 use crate::{
     error::Error,
@@ -28,7 +27,7 @@ use crate::{
 ///     y: u64,
 /// }
 /// ```
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct SingleID {
     pub(crate) z: u8,
     pub(crate) f: i64,
@@ -1159,7 +1158,7 @@ impl crate::id::space_id::SpaceID for SingleID {
 }
 
 impl From<SingleID> for EncodeID {
-    ///`SingleID`を[`EncodeID`]に変換します。表す物理的な範囲に変化はありません。
+    ///`SingleID`を[`EncodeID`]に変換します。kaga物理的な範囲に変化はありません。
     fn from(id: SingleID) -> Self {
         let f_bitvec = Segment { z: id.z, dim: id.f }.into();
         let x_bitvec = Segment { z: id.z, dim: id.x }.into();
