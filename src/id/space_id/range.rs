@@ -16,10 +16,10 @@ use crate::{
 };
 
 pub struct RangeID {
-    z: u8,
-    f: [i64; 2],
-    x: [u64; 2],
-    y: [u64; 2],
+    pub(crate) z: u8,
+    pub(crate) f: [i64; 2],
+    pub(crate) x: [u64; 2],
+    pub(crate) y: [u64; 2],
 }
 
 impl fmt::Display for RangeID {

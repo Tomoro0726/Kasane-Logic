@@ -6,5 +6,5 @@
 //! - [`Coordinate`]: WGS-84楕円体上の緯度・経度・高度を表現
 //! - [`Ecef`]: 地心地固直交座標系（ECEF）の座標を表現
 
-mod constants;
-mod point;
+pub mod constants;
+pub mod point;

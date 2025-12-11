@@ -1,6 +1,6 @@
 // src/id/space_id/single.rs
 use itertools::iproduct;
-use std::fmt;
+use std::{collections::btree_map::Range, fmt};
 
 use crate::{
     error::Error,
@@ -9,6 +9,7 @@ use crate::{
         constants::{F_MAX, F_MIN, XY_MAX},
         encode::EncodeID,
         helpers,
+        range::RangeID,
         segment::Segment,
     },
 };
@@ -499,6 +500,17 @@ impl From<SingleID> for EncodeID {
             f: vec![f_bitvec],
             x: vec![x_bitvec],
             y: vec![y_bitvec],
+        }
+    }
+}
+
+impl From<SingleID> for RangeID {
+    fn from(id: SingleID) -> Self {
+        RangeID {
+            z: id.z,
+            f: [id.f, id.f],
+            x: [id.x, id.x],
+            y: [id.y, id.y],
         }
     }
 }
