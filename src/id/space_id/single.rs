@@ -6,7 +6,7 @@ use crate::{
     geometry::coordinate::Coordinate,
     id::space_id::{
         SpaceID,
-        constants::{F_MAX, F_MIN, XY_MAX},
+        constants::{F_MAX, F_MIN, MAX_ZOOM_LEVEL, XY_MAX},
         encode::EncodeID,
         helpers,
         range::RangeID,
@@ -93,7 +93,7 @@ impl SingleID {
     /// ```
     pub fn new(z: u8, f: i64, x: u64, y: u64) -> Result<SingleID, Error> {
         //todo
-        if z > 60 {
+        if z > MAX_ZOOM_LEVEL as u8 {
             return Err(Error::ZOutOfRange { z });
         }
 

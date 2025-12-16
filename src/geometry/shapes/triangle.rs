@@ -1,16 +1,20 @@
 use std::{cell::RefCell, collections::HashSet, f64::consts::PI, rc::Rc};
 
 use crate::{
+    error::Error,
     geometry::{constants::WGS84_A, coordinate::Coordinate, ecef::Ecef},
-    id::space_id::single::SingleID,
+    id::space_id::{constants::MAX_ZOOM_LEVEL, single::SingleID},
 };
-
 pub fn triangle(
     z: u8,
     a: Coordinate,
     b: Coordinate,
     c: Coordinate,
-) -> impl Iterator<Item = SingleID> {
+) -> Result<impl Iterator<Item = SingleID>, Error> {
+    if z > MAX_ZOOM_LEVEL as u8 {
+        return Err(Error::ZOutOfRange { z });
+    }
+
     let ecef_a: Ecef = a.into();
     let ecef_b: Ecef = b.into();
     let ecef_c: Ecef = c.into();
@@ -21,6 +25,7 @@ pub fn triangle(
         .min(b.latitude.abs())
         .min(c.latitude.abs())
         .to_radians();
+
     let d = PI * WGS84_A * min_lat_rad.cos() * 2f64.powi(-2 - z as i32);
 
     let l1 = ((ecef_c.x - ecef_b.x).powi(2)
@@ -40,7 +45,7 @@ pub fn triangle(
 
     let seen = Rc::new(RefCell::new(HashSet::new()));
 
-    (0..=steps).flat_map(move |i| {
+    let iter = (0..=steps).flat_map(move |i| {
         let t = i as f64 / steps as f64;
 
         let line1 = (
@@ -54,7 +59,7 @@ pub fn triangle(
             ecef_a.z * (1.0 - t) + ecef_c.z * t,
         );
 
-        let seen = seen.clone(); // クロージャごとに clone
+        let seen = seen.clone();
 
         (0..=i).filter_map(move |j| {
             let (x, y, z_pos) = if i == 0 {
@@ -79,5 +84,7 @@ pub fn triangle(
                 None
             }
         })
-    })
+    });
+
+    Ok(iter)
 }
